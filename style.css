@@ -1,89 +1,68 @@
 body {
-  font-family: Verdana, sans-serif;
-  background-color: #333;
-  color: white;
   margin: 0;
   padding: 0;
+  font-family: Verdana, sans-serif;
+  background-color: #333;
+  color: #fff;
   text-align: center;
 }
 h1 { margin: 20px 0; }
 
+#arena {
+  width: 800px;
+  height: 200px;
+  margin: 0 auto 20px;
+  position: relative;
+  background: #555;
+  overflow: hidden;
+}
+.sprite {
+  position: absolute;
+  bottom: 0;
+  width: 64px;
+  height: 64px;
+  background-image: url("img/gladiatore_sprite.png");
+  background-size: 384px 64px; /* 6 frame × 64px */
+}
+#player {
+  left: 100px;
+}
+#enemy {
+  left: 736px; /* 800 - 64 */
+  background-image: url("img/nemico_sprite.png");
+}
+
+/* Frame singoli: posizioni background-position */
+.idle   { background-position:   0px   0px; }
+.walk1  { background-position: -64px   0px; }
+.walk2  { background-position: -128px  0px; }
+.attack { background-position: -192px  0px; }
+.jump   { background-position: -256px  0px; }
+.defend { background-position: -320px  0px; }
+
+/* HUD e controlli */
 #hud {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   background-color: #222;
   padding: 10px 40px;
 }
 .health-bar {
-  width: 200px;
-  height: 20px;
-  background-color: #900;
-  border: 2px solid #fff;
-  position: relative;
+  width: 150px;
+  height: 16px;
+  background: #555;
+  border: 1px solid #fff;
+  margin: 0 10px;
 }
-.health-bar .fill {
+.fill {
   height: 100%;
-  background-color: #0f0;
+  background: #0f0;
   width: 100%;
-  transition: width 0.2s;
 }
-#score { font-size: 1.2em; }
-
-#game {
-  position: relative;
-  width: 800px;
-  height: 400px;
-  margin: 20px auto;
-  background-color: #555;
-  overflow: hidden;
-}
-
-.sprite {
-  position: absolute;
-  width: 64px;
-  height: 64px;
-  background-repeat: no-repeat;
-  background-size: 384px 64px; /* 6 frame × 64px */
-  image-rendering: pixelated;
-}
-#player {
-  left: 100px;
-  bottom: 0;
-  background-image: url("img/gladiatore_sprite.png");
-}
-#enemy {
-  right: 100px;
-  bottom: 0;
-  background-image: url("img/nemico_sprite.png");
-}
-
-/* sprite animations */
-@keyframes idle   { 0%,100% { background-position:    0    0; } }
-@keyframes walk   { 0% { background-position:    0    0; } 50% { background-position: -64px  0; } 100% { background-position: -128px 0; } }
-@keyframes attack { 0%,100% { background-position: -192px  0; } }
-@keyframes jump   { 0%,100% { background-position: -256px  0; } }
-@keyframes defend { 0%,100% { background-position: -320px  0; } }
-
-.idle   { animation: idle   1s   steps(1) infinite; }
-.walk   { animation: walk   0.6s steps(2) infinite; }
-.attack { animation: attack 0.4s steps(1) forwards; }
-.jump   { animation: jump   0.6s steps(1) forwards; }
-.defend { animation: defend 0.6s steps(1) forwards; }
-
-#controls {
-  position: fixed;
-  top: 60px;
-  left: 20px;
-  background: rgba(0,0,0,0.6);
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-size: 14px;
-  z-index: 999;
-}
-#controls h2 { margin: 0 0 4px; font-size: 16px; }
+#controls { text-align: left; }
 #controls .row { display: flex; align-items: center; margin: 4px 0; }
-#controls .key {
+.key {
   display: inline-block;
   min-width: 32px;
   text-align: center;
