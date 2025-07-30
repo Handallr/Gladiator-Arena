@@ -6,10 +6,7 @@ body {
   padding: 0;
   text-align: center;
 }
-
-h1 {
-  margin: 20px 0;
-}
+h1 { margin: 20px 0; }
 
 #hud {
   display: flex;
@@ -18,7 +15,6 @@ h1 {
   background-color: #222;
   padding: 10px 40px;
 }
-
 .health-bar {
   width: 200px;
   height: 20px;
@@ -26,27 +22,23 @@ h1 {
   border: 2px solid #fff;
   position: relative;
 }
-
 .health-bar .fill {
   height: 100%;
   background-color: #0f0;
   width: 100%;
   transition: width 0.2s;
 }
-
-#score {
-  font-size: 1.2em;
-}
+#score { font-size: 1.2em; }
 
 #game {
   position: relative;
-  width: 100%;
+  width: 800px;
   height: 400px;
+  margin: 20px auto;
   background-color: #555;
   overflow: hidden;
 }
 
-/* SPRITES */
 .sprite {
   position: absolute;
   width: 64px;
@@ -55,66 +47,41 @@ h1 {
   background-size: 384px 64px;
   image-rendering: pixelated;
 }
-
 #player {
   left: 100px;
   bottom: 0;
   background-image: url("img/gladiatore_sprite.png");
 }
-
 #enemy {
   right: 100px;
   bottom: 0;
   background-image: url("img/nemico_sprite.png");
 }
 
-/* ANIMAZIONI */
-@keyframes idle {
-  0%, 100% { background-position: 0 0; }
-}
-@keyframes walk {
-  0%   { background-position: 0 0; }
-  50%  { background-position: -64px 0; }
-  100% { background-position: -128px 0; }
-}
-@keyframes attack {
-  0%, 100% { background-position: -192px 0; }
-}
-@keyframes jump {
-  0%, 100% { background-position: -256px 0; }
-}
-@keyframes defend {
-  0%, 100% { background-position: -320px 0; }
-}
+@keyframes idle   { 0%,100% { background-position: 0    0; } }
+@keyframes walk   { 0% { background-position: 0    0; } 50% { background-position: -64px 0; } 100% { background-position: -128px 0; } }
+@keyframes attack { 0%,100% { background-position: -192px 0; } }
+@keyframes jump   { 0%,100% { background-position: -256px 0; } }
+@keyframes defend { 0%,100% { background-position: -320px 0; } }
 
-/* CLASSI */
 .idle   { animation: idle   1s   steps(1) infinite; }
 .walk   { animation: walk   0.6s steps(2) infinite; }
 .attack { animation: attack 0.4s steps(1) forwards; }
 .jump   { animation: jump   0.6s steps(1) forwards; }
 .defend { animation: defend 0.6s steps(1) forwards; }
 
-/* CONTROLS PANEL */
 #controls {
   position: fixed;
   top: 60px;
   left: 20px;
   background: rgba(0,0,0,0.6);
-  color: #fff;
   padding: 8px 12px;
-  font-size: 14px;
   border-radius: 4px;
+  font-size: 14px;
   z-index: 999;
 }
-#controls h2 {
-  margin: 0 0 4px;
-  font-size: 16px;
-}
-#controls .row {
-  display: flex;
-  align-items: center;
-  margin: 4px 0;
-}
+#controls h2 { margin: 0 0 4px; font-size: 16px; }
+#controls .row { display: flex; align-items: center; margin: 4px 0; }
 #controls .key {
   display: inline-block;
   min-width: 32px;

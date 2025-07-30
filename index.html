@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gladiatore Arena</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <h1>🏛️ Gladiatore Arena</h1>
   <div id="hud">
-    <div id="player-hp" class="health-bar"><div class="fill" id="player-hp-fill"></div></div>
-    <div id="enemy-hp" class="health-bar"><div class="fill" id="enemy-hp-fill"></div></div>
-    <p id="score">Punti: 0</p>
+    <div class="health-bar">
+      <div id="playerHP" class="fill"></div>
+    </div>
+    <div id="score">Punti: 0</div>
+    <div class="health-bar">
+      <div id="enemyHP" class="fill"></div>
+    </div>
   </div>
 
   <div id="game">
@@ -22,13 +26,13 @@
   <div id="controls">
     <h2>Controls</h2>
     <div class="row">
-      <span class="key">A / ←</span><span>Walk Left</span>
-      <span class="key">D / →</span><span>Walk Right</span>
-      <span class="key">W / ↑</span><span>Jump</span>
+      <span class="key">A</span>/<span class="key">←</span><span>Walk Left</span>
+      <span class="key">D</span>/<span class="key">→</span><span>Walk Right</span>
+      <span class="key">W</span>/<span class="key">↑</span><span>Jump</span>
     </div>
     <div class="row">
-      <span class="key">S / ↓</span><span>Block / Pick up spear</span>
-      <span class="key">Space</span><span>Attack / Throw spear</span>
+      <span class="key">S</span>/<span class="key">↓</span><span>Block</span>
+      <span class="key">Space</span><span>Attack</span>
     </div>
   </div>
 
