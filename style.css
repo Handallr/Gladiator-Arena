@@ -39,8 +39,9 @@
   background-image: url("img/gladiatore_sprite.png");
   background-size: 256px 64px; /* 4 frame in orizzontale */
   background-repeat: no-repeat;
-  background-position: 0 0; /* iniziale: frame 0 */
+  background-position: 0 0;
 }
+
 
 #enemy {
   left: 350px;
