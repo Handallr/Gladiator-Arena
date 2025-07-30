@@ -126,3 +126,10 @@ function respawnEnemy() {
   enemy.style.left = (Math.random() * 400 + 150) + 'px';
   updateBars();
 }
+
+let enemyFrame = 0;
+setInterval(() => {
+  enemy.style.backgroundPosition = `-${enemyFrame * 64}px 0`;
+  enemyFrame = enemyFrame === 0 ? 1 : 0; // alterna Idle e Walk
+}, 400);
+

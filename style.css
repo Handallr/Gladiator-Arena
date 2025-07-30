@@ -33,6 +33,13 @@
 }
 
 #enemy {
+  width: 64px;
+  height: 64px;
+  background-image: url('images/nemico.png');
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  position: absolute;
+  bottom: 0;
   left: 350px;
 }
 
