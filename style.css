@@ -52,7 +52,7 @@ h1 {
   width: 64px;
   height: 64px;
   background-repeat: no-repeat;
-  background-size: 384px 64px; /* 6×64 frame */
+  background-size: 384px 64px;
   image-rendering: pixelated;
 }
 
@@ -73,7 +73,7 @@ h1 {
   0%, 100% { background-position: 0 0; }
 }
 @keyframes walk {
-  0%   { background-position: 0   0; }
+  0%   { background-position: 0 0; }
   50%  { background-position: -64px 0; }
   100% { background-position: -128px 0; }
 }
