@@ -1,91 +1,57 @@
 
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+const player = document.getElementById("player");
+const enemy = document.getElementById("enemy");
+const playerHP = document.getElementById("player-hp-fill");
+const enemyHP = document.getElementById("enemy-hp-fill");
+const scoreEl = document.getElementById("score");
 
-const gladiatorImg = new Image();
-gladiatorImg.src = "img/gladiatore_sprite.png";
+let playerHealth = 100;
+let enemyHealth = 100;
+let score = 0;
+let isJumping = false;
+let isDefending = false;
 
-const enemyImg = new Image();
-enemyImg.src = "img/nemico_sprite.png";
-
-const FRAME_WIDTH = 64;
-const FRAME_HEIGHT = 64;
-
-const player = {
-  x: 100,
-  y: 270,
-  vx: 0,
-  vy: 0,
-  width: 64,
-  height: 64,
-  frame: 0,
-  grounded: true,
-  action: 'idle'
-};
-
-const enemy = {
-  x: 600,
-  y: 270,
-  width: 64,
-  height: 64,
-  frame: 0
-};
-
-const keys = {};
-document.addEventListener("keydown", e => keys[e.key] = true);
-document.addEventListener("keyup", e => keys[e.key] = false);
-
-gladiatorImg.onload = () => {
-  enemyImg.onload = () => {
-    requestAnimationFrame(gameLoop);
-  };
-};
-
-function updatePlayer() {
-  player.vx = 0;
-  if (keys["ArrowLeft"]) {
-    player.vx = -3;
-    player.action = "walk";
-  } else if (keys["ArrowRight"]) {
-    player.vx = 3;
-    player.action = "walk";
-  } else {
-    player.action = "idle";
-  }
-
-  if (keys["ArrowUp"] && player.grounded) {
-    player.vy = -10;
-    player.grounded = false;
-    player.action = "jump";
-  }
-
-  if (keys["s"]) player.action = "crouch";
-  if (keys["a"]) player.action = "attack";
-  if (keys["d"]) player.action = "defend";
-
-  player.x += player.vx;
-  player.y += player.vy;
-  player.vy += 0.5;
-
-  if (player.y >= 270) {
-    player.y = 270;
-    player.vy = 0;
-    player.grounded = true;
-  }
+function updateHealthBars() {
+  playerHP.style.width = playerHealth + "%";
+  enemyHP.style.width = enemyHealth + "%";
 }
 
-function drawSprite(img, frame, x, y) {
-  ctx.drawImage(img, frame * FRAME_WIDTH, 0, FRAME_WIDTH, FRAME_HEIGHT, x, y, FRAME_WIDTH, FRAME_HEIGHT);
+function playAnimation(element, type) {
+  element.style.animation = type + " 0.4s steps(1) forwards";
+  setTimeout(() => {
+    element.style.animation = "";
+  }, 400);
 }
 
-function gameLoop() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  updatePlayer();
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight") {
+    player.style.left = parseInt(player.style.left || 100) + 20 + "px";
+    playAnimation(player, "walk");
+  }
 
-  drawSprite(gladiatorImg, player.frame, player.x, player.y);
-  drawSprite(enemyImg, enemy.frame, enemy.x, enemy.y);
+  if (e.key === " ") {
+    playAnimation(player, "attack");
+    enemyHealth -= 10;
+    score += 10;
+    updateHealthBars();
+    scoreEl.textContent = "Punti: " + score;
 
-  player.frame = (player.frame + 1) % 4;
+    if (enemyHealth <= 0) {
+      alert("Nemico sconfitto!");
+      enemyHealth = 100;
+      score += 100;
+    }
+  }
 
-  requestAnimationFrame(gameLoop);
-}
+  if (e.key === "ArrowUp" && !isJumping) {
+    isJumping = true;
+    playAnimation(player, "jump");
+    setTimeout(() => isJumping = false, 600);
+  }
+
+  if (e.key === "ArrowDown") {
+    isDefending = true;
+    playAnimation(player, "defend");
+    setTimeout(() => isDefending = false, 600);
+  }
+});

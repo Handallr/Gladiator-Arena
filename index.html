@@ -1,13 +1,29 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Gladiator Arena</title>
-    <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>Gladiatore Arena</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <canvas id="gameCanvas" width="800" height="400"></canvas>
-    <script src="game.js"></script>
+  <h1>🏛️ Gladiatore Arena</h1>
+
+  <div id="hud">
+    <div class="health-bar">
+      <div id="player-hp-fill" class="fill"></div>
+    </div>
+    <div id="score">Punti: 0</div>
+    <div class="health-bar">
+      <div id="enemy-hp-fill" class="fill"></div>
+    </div>
+  </div>
+
+  <div id="game">
+    <div id="player" class="sprite"></div>
+    <div id="enemy" class="sprite"></div>
+  </div>
+
+  <script src="game.js"></script>
 </body>
 </html>
