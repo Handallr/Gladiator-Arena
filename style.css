@@ -20,3 +20,23 @@
   background-color: green;
   width: 100%;
 }
+
+#player {
+  width: 64px;
+  height: 64px;
+  left: 100px;
+  bottom: 0;
+  background-image: url("img/gladiatore.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+#enemy {
+  width: 64px;
+  height: 64px;
+  left: 400px;
+  bottom: 0;
+  background-image: url("img/nemico.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+}
