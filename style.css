@@ -21,15 +21,6 @@
   width: 100%;
 }
 
-#player, #enemy {
-  position: absolute;
-  width: 64px;
-  height: 64px;
-  bottom: 0;
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-
 #player {
   position: absolute;
   width: 64px;
