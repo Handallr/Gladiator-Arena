@@ -22,17 +22,15 @@
 }
 
 #player {
-  position: absolute;
   width: 64px;
   height: 64px;
-  bottom: 0;
-  left: 200px;
-  background-image: url("img/gladiatore_sprite.png");
-  background-size: 256px 64px; /* 4 frame in orizzontale */
+  background-image: url('images/gladiatore_sprite.png');
   background-repeat: no-repeat;
   background-position: 0 0;
+  position: absolute;
+  bottom: 0;
+  left: 100px;
 }
-
 
 #enemy {
   left: 350px;

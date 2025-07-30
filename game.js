@@ -20,10 +20,10 @@ let animationInterval = null;
 document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowRight') {
     playerPos += speed;
-    animateMovement();
+    animateWalk();
   } else if (e.key === 'ArrowLeft') {
     playerPos -= speed;
-    animateMovement();
+    animateWalk();
   } else if (e.key === ' ') {
     attack();
   } else if (e.key === 'Shift') {
@@ -46,26 +46,26 @@ document.addEventListener('keyup', (e) => {
   }
 });
 
-function animateMovement() {
+function animateWalk() {
   if (attacking || defending || jumping || crouching) return;
   stopAnimation();
-  let frame = 0;
+  let frame = 1;
   animationInterval = setInterval(() => {
-    frame = (frame + 1) % 4;
     player.style.backgroundPosition = `-${frame * 64}px 0`;
+    frame = frame === 1 ? 2 : 1; // alterna Walk1 e Walk2
   }, 150);
   setTimeout(stopAnimation, 600);
 }
 
 function stopAnimation() {
   clearInterval(animationInterval);
-  player.style.backgroundPosition = '0 0';
+  player.style.backgroundPosition = '0 0'; // Idle
 }
 
 function attack() {
   if (attacking || defending || jumping || crouching) return;
   attacking = true;
-  player.style.backgroundPosition = '-128px 0'; // frame di attacco
+  player.style.backgroundPosition = '-192px 0'; // Attack
 
   const enemyPos = parseInt(enemy.style.left);
   if (Math.abs(playerPos - enemyPos) < 60) {
@@ -84,25 +84,27 @@ function attack() {
   setTimeout(() => {
     player.style.backgroundPosition = '0 0';
     attacking = false;
-  }, 300);
+  }, 400);
 }
 
 function defend(state) {
   defending = state;
-  player.style.filter = state ? 'brightness(70%) grayscale(50%)' : 'none';
+  player.style.backgroundPosition = state ? '-384px 0' : '0 0'; // Defend
 }
 
 function jump() {
   if (jumping || crouching || attacking) return;
   jumping = true;
-  let jumpHeight = 80;
+  player.style.backgroundPosition = '-256px 0'; // Jump
   player.style.transition = 'bottom 0.2s ease';
-  player.style.bottom = jumpHeight + 'px';
+  player.style.bottom = '80px';
+
   setTimeout(() => {
     player.style.bottom = '0px';
     setTimeout(() => {
-      jumping = false;
       player.style.transition = 'none';
+      player.style.backgroundPosition = '0 0';
+      jumping = false;
     }, 200);
   }, 200);
 }
@@ -110,8 +112,8 @@ function jump() {
 function crouch(state) {
   if (jumping || attacking) return;
   crouching = state;
-  player.style.height = state ? '40px' : '64px';
-  player.style.backgroundPosition = state ? '-192px 0' : '0 0'; // frame 3 per accovacciato
+  player.style.height = state ? '48px' : '64px';
+  player.style.backgroundPosition = state ? '-320px 0' : '0 0'; // Crouch
 }
 
 function updateBars() {
