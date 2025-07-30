@@ -1,15 +1,14 @@
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  text-align: center;
-  background-color: #eee;
   margin: 0;
-  padding: 20px;
+  background-color: #111;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
 canvas {
-  display: block;
-  margin: 0 auto;
-  background-color: #fff;
-  border: 3px solid #000;
+  background-color: #333;
+  border: 3px solid #888;
 }

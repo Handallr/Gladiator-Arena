@@ -1,128 +1,91 @@
-const player = document.getElementById('player');
-const enemy = document.getElementById('enemy');
 
-const playerHPFill = document.getElementById('player-hp-fill');
-const enemyHPFill = document.getElementById('enemy-hp-fill');
-const scoreDisplay = document.getElementById('score');
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
 
-let playerPos = 200;
-let playerHP = 100;
-let enemyHP = 50;
-let score = 0;
+const gladiatorImg = new Image();
+gladiatorImg.src = "img/gladiatore_sprite.png";
 
-const speed = 10;
-let attacking = false;
-let defending = false;
-let crouching = false;
-let jumping = false;
-let animationInterval = null;
+const enemyImg = new Image();
+enemyImg.src = "img/nemico_sprite.png";
 
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowRight') {
-    playerPos += speed;
-    animateWalk();
-  } else if (e.key === 'ArrowLeft') {
-    playerPos -= speed;
-    animateWalk();
-  } else if (e.key === ' ') {
-    attack();
-  } else if (e.key === 'Shift') {
-    defend(true);
-  } else if (e.key === 'ArrowUp') {
-    jump();
-  } else if (e.key === 'ArrowDown') {
-    crouch(true);
+const FRAME_WIDTH = 64;
+const FRAME_HEIGHT = 64;
+
+const player = {
+  x: 100,
+  y: 270,
+  vx: 0,
+  vy: 0,
+  width: 64,
+  height: 64,
+  frame: 0,
+  grounded: true,
+  action: 'idle'
+};
+
+const enemy = {
+  x: 600,
+  y: 270,
+  width: 64,
+  height: 64,
+  frame: 0
+};
+
+const keys = {};
+document.addEventListener("keydown", e => keys[e.key] = true);
+document.addEventListener("keyup", e => keys[e.key] = false);
+
+gladiatorImg.onload = () => {
+  enemyImg.onload = () => {
+    requestAnimationFrame(gameLoop);
+  };
+};
+
+function updatePlayer() {
+  player.vx = 0;
+  if (keys["ArrowLeft"]) {
+    player.vx = -3;
+    player.action = "walk";
+  } else if (keys["ArrowRight"]) {
+    player.vx = 3;
+    player.action = "walk";
+  } else {
+    player.action = "idle";
   }
 
-  playerPos = Math.max(0, Math.min(536, playerPos));
-  player.style.left = playerPos + 'px';
-});
-
-document.addEventListener('keyup', (e) => {
-  if (e.key === 'Shift') {
-    defend(false);
-  } else if (e.key === 'ArrowDown') {
-    crouch(false);
-  }
-});
-
-function animateWalk() {
-  if (attacking || defending || jumping || crouching) return;
-  stopAnimation();
-  let frame = 1;
-  animationInterval = setInterval(() => {
-    player.style.backgroundPosition = `-${frame * 64}px 0`;
-    frame = frame === 1 ? 2 : 1; // alterna Walk1 e Walk2
-  }, 150);
-  setTimeout(stopAnimation, 600);
-}
-
-function stopAnimation() {
-  clearInterval(animationInterval);
-  player.style.backgroundPosition = '0 0'; // Idle
-}
-
-function attack() {
-  if (attacking || defending || jumping || crouching) return;
-  attacking = true;
-  player.style.backgroundPosition = '-192px 0'; // Attack
-
-  const enemyPos = parseInt(enemy.style.left);
-  if (Math.abs(playerPos - enemyPos) < 60) {
-    if (!defending) {
-      enemyHP -= 25;
-      updateBars();
-
-      if (enemyHP <= 0) {
-        score++;
-        scoreDisplay.textContent = score;
-        respawnEnemy();
-      }
-    }
+  if (keys["ArrowUp"] && player.grounded) {
+    player.vy = -10;
+    player.grounded = false;
+    player.action = "jump";
   }
 
-  setTimeout(() => {
-    player.style.backgroundPosition = '0 0';
-    attacking = false;
-  }, 400);
+  if (keys["s"]) player.action = "crouch";
+  if (keys["a"]) player.action = "attack";
+  if (keys["d"]) player.action = "defend";
+
+  player.x += player.vx;
+  player.y += player.vy;
+  player.vy += 0.5;
+
+  if (player.y >= 270) {
+    player.y = 270;
+    player.vy = 0;
+    player.grounded = true;
+  }
 }
 
-function defend(state) {
-  defending = state;
-  player.style.backgroundPosition = state ? '-384px 0' : '0 0'; // Defend
+function drawSprite(img, frame, x, y) {
+  ctx.drawImage(img, frame * FRAME_WIDTH, 0, FRAME_WIDTH, FRAME_HEIGHT, x, y, FRAME_WIDTH, FRAME_HEIGHT);
 }
 
-function jump() {
-  if (jumping || crouching || attacking) return;
-  jumping = true;
-  player.style.backgroundPosition = '-256px 0'; // Jump
-  player.style.transition = 'bottom 0.2s ease';
-  player.style.bottom = '80px';
+function gameLoop() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  updatePlayer();
 
-  setTimeout(() => {
-    player.style.bottom = '0px';
-    setTimeout(() => {
-      player.style.transition = 'none';
-      player.style.backgroundPosition = '0 0';
-      jumping = false;
-    }, 200);
-  }, 200);
-}
+  drawSprite(gladiatorImg, player.frame, player.x, player.y);
+  drawSprite(enemyImg, enemy.frame, enemy.x, enemy.y);
 
-function crouch(state) {
-  if (jumping || attacking) return;
-  crouching = state;
-  player.style.height = state ? '48px' : '64px';
-  player.style.backgroundPosition = state ? '-320px 0' : '0 0'; // Crouch
-}
+  player.frame = (player.frame + 1) % 4;
 
-function updateBars() {
-  playerHPFill.style.width = playerHP + '%';
-  enemyHPFill.style.width = Math.max(0, enemyHP) + '%';
-}
-
-function respawnEnemy() {
-  enemyHP = 50;
-  enemy.style.left = (Math.random() * 400 + 150) + 'px';
-  updateBars();
+  requestAnimationFrame(gameLoop);
 }
