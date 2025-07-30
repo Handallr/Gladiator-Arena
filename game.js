@@ -1,57 +1,55 @@
-
-const player = document.getElementById("player");
-const enemy = document.getElementById("enemy");
-const playerHP = document.getElementById("player-hp-fill");
-const enemyHP = document.getElementById("enemy-hp-fill");
-const scoreEl = document.getElementById("score");
+const player     = document.getElementById("player");
+const enemy      = document.getElementById("enemy");
+const playerHP   = document.getElementById("player-hp-fill");
+const enemyHP    = document.getElementById("enemy-hp-fill");
+const scoreEl    = document.getElementById("score");
 
 let playerHealth = 100;
-let enemyHealth = 100;
-let score = 0;
-let isJumping = false;
-let isDefending = false;
+let enemyHealth  = 100;
+let score        = 0;
 
+// Aggiorna le barre vita
 function updateHealthBars() {
   playerHP.style.width = playerHealth + "%";
-  enemyHP.style.width = enemyHealth + "%";
+  enemyHP.style.width  = enemyHealth  + "%";
 }
 
-function playAnimation(element, type) {
-  element.style.animation = type + " 0.4s steps(1) forwards";
-  setTimeout(() => {
-    element.style.animation = "";
-  }, 400);
+// Applica un’animazione CSS e poi ritorna a idle
+function playAnimation(el, anim) {
+  el.classList.remove("walk", "attack", "jump", "defend");
+  void el.offsetWidth;  // reset dell’animazione
+  el.classList.add(anim);
 }
 
-document.addEventListener("keydown", (e) => {
-  if (e.key === "ArrowRight") {
-    player.style.left = parseInt(player.style.left || 100) + 20 + "px";
-    playAnimation(player, "walk");
+// Gestione input
+document.addEventListener("keydown", e => {
+  switch (e.key) {
+    case "ArrowRight":
+      player.style.left = (parseInt(player.style.left) + 10) + "px";
+      playAnimation(player, "walk");
+      break;
+    case "ArrowLeft":
+      player.style.left = (parseInt(player.style.left) - 10) + "px";
+      playAnimation(player, "walk");
+      break;
+    case " ":
+      playAnimation(player, "attack");
+      enemyHealth -= 10;
+      score       += 10;
+      updateHealthBars();
+      scoreEl.textContent = "Punti: " + score;
+      break;
+    case "ArrowUp":
+      playAnimation(player, "jump");
+      break;
+    case "ArrowDown":
+      playAnimation(player, "defend");
+      break;
   }
+});
 
-  if (e.key === " ") {
-    playAnimation(player, "attack");
-    enemyHealth -= 10;
-    score += 10;
-    updateHealthBars();
-    scoreEl.textContent = "Punti: " + score;
-
-    if (enemyHealth <= 0) {
-      alert("Nemico sconfitto!");
-      enemyHealth = 100;
-      score += 100;
-    }
-  }
-
-  if (e.key === "ArrowUp" && !isJumping) {
-    isJumping = true;
-    playAnimation(player, "jump");
-    setTimeout(() => isJumping = false, 600);
-  }
-
-  if (e.key === "ArrowDown") {
-    isDefending = true;
-    playAnimation(player, "defend");
-    setTimeout(() => isDefending = false, 600);
-  }
+// Quando l’animazione non è più in corso, torniamo a idle
+player.addEventListener("animationend", () => {
+  player.classList.remove("walk", "attack", "jump", "defend");
+  player.classList.add("idle");
 });

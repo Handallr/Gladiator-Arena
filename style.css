@@ -1,11 +1,11 @@
 
 body {
-  font-family: 'Verdana', sans-serif;
+  font-family: Verdana, sans-serif;
   background-color: #333;
   color: white;
-  text-align: center;
   margin: 0;
   padding: 0;
+  text-align: center;
 }
 
 h1 {
@@ -16,8 +16,8 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 40px;
   background-color: #222;
+  padding: 10px 40px;
 }
 
 .health-bar {
@@ -32,6 +32,7 @@ h1 {
   height: 100%;
   background-color: #0f0;
   width: 100%;
+  transition: width 0.2s;
 }
 
 #score {
@@ -46,11 +47,13 @@ h1 {
   overflow: hidden;
 }
 
+/* SPRITES */
 .sprite {
   position: absolute;
   width: 256px;
   height: 256px;
-  background-size: cover;
+  background-repeat: no-repeat;
+  background-size: 1536px 1024px; /* 6×256 by 4×256 */
   image-rendering: pixelated;
 }
 
@@ -58,32 +61,45 @@ h1 {
   left: 100px;
   bottom: 0;
   background-image: url("img/gladiatore_sprite.png");
+  animation: idle 1s steps(1) infinite;
 }
 
 #enemy {
   right: 100px;
   bottom: 0;
   background-image: url("img/nemico_sprite.png");
+  animation: idle 1s steps(1) infinite;
 }
 
-/* Animazioni base */
+/* KEYFRAMES */
+@keyframes idle {
+  0%   { background-position:    0   0; }
+  100% { background-position:    0   0; }
+}
+
 @keyframes walk {
-  0%   { background-position: 0 0; }
+  0%   { background-position:    0   0; }
   50%  { background-position: -256px 0; }
   100% { background-position: -512px 0; }
 }
 
 @keyframes attack {
   0%   { background-position: -768px 0; }
-  100% { background-position: -1024px 0; }
+  100% { background-position: -768px 0; }
 }
 
 @keyframes jump {
   0%   { background-position: -1024px 0; }
-  100% { background-position: -1280px 0; }
+  100% { background-position: -1024px 0; }
 }
 
 @keyframes defend {
   0%   { background-position: -1280px 0; }
-  100% { background-position: -1536px 0; }
+  100% { background-position: -1280px 0; }
 }
+
+/* CLASSI */
+.walk   { animation: walk   0.6s steps(3) infinite; }
+.attack { animation: attack 0.4s steps(1) forwards; }
+.jump   { animation: jump   0.6s steps(1) forwards; }
+.defend { animation: defend 0.6s steps(1) forwards; }
