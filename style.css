@@ -1,32 +1,22 @@
-body {
-  background: #f4e2d8;
-  font-family: sans-serif;
-  text-align: center;
-}
-
-#game {
-  position: relative;
+#hud {
   width: 600px;
-  height: 300px;
-  margin: 20px auto;
-  background-color: #ddd;
-  border: 2px solid #333;
-  overflow: hidden;
+  margin: 10px auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-#player, #enemy {
-  position: absolute;
-  width: 50px;
-  height: 80px;
-  bottom: 0;
+.health-bar {
+  width: 200px;
+  height: 20px;
+  background-color: #aaa;
+  border: 1px solid #333;
+  margin: 0 10px;
+  position: relative;
 }
 
-#player {
-  background-color: darkred;
-  left: 100px;
-}
-
-#enemy {
-  background-color: darkblue;
-  left: 400px;
+.health-bar .fill {
+  height: 100%;
+  background-color: green;
+  width: 100%;
 }
