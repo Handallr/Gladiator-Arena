@@ -1,67 +1,15 @@
+
 body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  background-color: #eee;
   margin: 0;
-  padding: 0;
-  background-color: #f0f0f0;
-  font-family: Arial, sans-serif;
+  padding: 20px;
 }
 
 canvas {
   display: block;
   margin: 0 auto;
-  background-color: #ffffff;
-  border: 2px solid #000;
+  background-color: #fff;
+  border: 3px solid #000;
 }
-
-/* GLADIATORE PRINCIPALE */
-#gladiator {
-  width: 64px;
-  height: 64px;
-  background-image: url('images/gladiatore_sprite.png');
-  background-repeat: no-repeat;
-  background-position: 0 0;
-  position: absolute;
-  bottom: 0;
-  left: 150px;
-}
-
-/* NEMICO */
-#enemy {
-  width: 64px;
-  height: 64px;
-  background-image: url('images/nemico_sprite.png');
-  background-repeat: no-repeat;
-  background-position: 0 0;
-  position: absolute;
-  bottom: 0;
-  left: 350px;
-}
-
-/* BARRE VITA */
-#healthBar, #enemyHealthBar {
-  position: absolute;
-  top: 10px;
-  height: 20px;
-  background-color: green;
-  border: 1px solid #000;
-  transition: width 0.2s;
-}
-
-#healthBar {
-  left: 10px;
-  width: 100px;
-}
-
-#enemyHealthBar {
-  right: 10px;
-  width: 100px;
-}
-
-/* PUNTEGGIO */
-#score {
-  position: absolute;
-  top: 40px;
-  left: 10px;
-  font-size: 20px;
-  font-weight: bold;
-}
-
