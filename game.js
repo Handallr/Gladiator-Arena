@@ -13,7 +13,7 @@ const speed = 5;
 let attacking = false;
 let defending = false;
 
-// inizializza idle
+// inizializza in idle
 player.classList.add('idle');
 enemy .classList.add('idle');
 
@@ -23,16 +23,16 @@ document.addEventListener('keydown', e => {
     case 'd': case 'ArrowRight': move(+speed); break;
     case ' ':                     attack();      break;
     case 's': case 'ArrowDown':  defend(true);  break;
-    case 'w': case 'ArrowUp':    jump();        break;
+    case 'w': case 'ArrowUp':    jump();         break;
   }
 });
 document.addEventListener('keyup', e => {
-  if(['a','ArrowLeft','d','ArrowRight'].includes(e.key)) stopMove();
-  if(e.key==='s' || e.key==='ArrowDown') defend(false);
+  if (['a','ArrowLeft','d','ArrowRight'].includes(e.key)) stopMove();
+  if (e.key==='s' || e.key==='ArrowDown') defend(false);
 });
 
 function move(dx) {
-  if(attacking || defending) return;
+  if (attacking || defending) return;
   playerPos = Math.max(0, Math.min(736, playerPos + dx));
   player.style.left = playerPos + 'px';
   player.classList.replace('idle','walk');
@@ -43,14 +43,16 @@ function stopMove() {
 }
 
 function attack() {
-  if(attacking||defending) return;
+  if (attacking || defending) return;
   attacking = true;
   player.classList.replace('idle','attack');
-  // colpo
-  if(Math.abs(playerPos - (parseInt(enemy.style.left) || (800-100-64))) < 70) {
+
+  // check range di 70px
+  const enemyX = parseInt(enemy.style.left) || (800-100-64);
+  if (Math.abs(playerPos - enemyX) < 70) {
     enemyHP = Math.max(0, enemyHP - 20);
     enemyHPFill.style.width = enemyHP + '%';
-    if(enemyHP===0) {
+    if (enemyHP === 0) {
       score++;
       scoreDisplay.textContent = 'Punti: ' + score;
       enemyHP = 100;
@@ -58,6 +60,7 @@ function attack() {
       enemy.style.left = '736px';
     }
   }
+
   setTimeout(() => {
     player.classList.replace('attack','idle');
     attacking = false;
@@ -66,12 +69,12 @@ function attack() {
 
 function defend(state) {
   defending = state;
-  if(state) player.classList.replace('idle','defend');
-  else      player.classList.replace('defend','idle');
+  if (state) player.classList.replace('idle','defend');
+  else       player.classList.replace('defend','idle');
 }
 
 function jump() {
-  if(attacking||defending) return;
+  if (attacking || defending) return;
   player.classList.replace('idle','jump');
   player.style.transition = 'bottom 0.3s ease';
   player.style.bottom     = '80px';

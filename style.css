@@ -44,7 +44,7 @@ h1 { margin: 20px 0; }
   width: 64px;
   height: 64px;
   background-repeat: no-repeat;
-  background-size: 384px 64px;
+  background-size: 384px 64px; /* 6 frame × 64px */
   image-rendering: pixelated;
 }
 #player {
@@ -58,11 +58,12 @@ h1 { margin: 20px 0; }
   background-image: url("img/nemico_sprite.png");
 }
 
-@keyframes idle   { 0%,100% { background-position: 0    0; } }
-@keyframes walk   { 0% { background-position: 0    0; } 50% { background-position: -64px 0; } 100% { background-position: -128px 0; } }
-@keyframes attack { 0%,100% { background-position: -192px 0; } }
-@keyframes jump   { 0%,100% { background-position: -256px 0; } }
-@keyframes defend { 0%,100% { background-position: -320px 0; } }
+/* sprite animations */
+@keyframes idle   { 0%,100% { background-position:    0    0; } }
+@keyframes walk   { 0% { background-position:    0    0; } 50% { background-position: -64px  0; } 100% { background-position: -128px 0; } }
+@keyframes attack { 0%,100% { background-position: -192px  0; } }
+@keyframes jump   { 0%,100% { background-position: -256px  0; } }
+@keyframes defend { 0%,100% { background-position: -320px  0; } }
 
 .idle   { animation: idle   1s   steps(1) infinite; }
 .walk   { animation: walk   0.6s steps(2) infinite; }
