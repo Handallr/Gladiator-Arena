@@ -6,6 +6,10 @@ export class GameOverState {
     this.btn = document.getElementById('restartBtn');
     this.btn.addEventListener('click', () => this.sm.change('play'));
   }
-  enter() { this.el.style.display = 'block'; }
-  exit()  { this.el.style.display = 'none';  }
+  enter() {
+    this.el.style.display = 'block';
+  }
+  exit() {
+    this.el.style.display = 'none';
+  }
 }
