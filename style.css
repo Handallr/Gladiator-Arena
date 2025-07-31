@@ -1,27 +1,42 @@
-
+/* Impostazioni generali */
 body {
   margin: 0;
-  padding: 0;
-  background-color: #222;
-  font-family: sans-serif;
-  color: white;
+  background-color: #f2e9dc;
+  font-family: 'Segoe UI', sans-serif;
   text-align: center;
 }
 
+/* Arena di gioco */
 #arena {
-  position: relative;
-  width: 100%;
-  height: 600px;
-  background-image: url('assets/backgrounds/background.png');
+  width: 800px;
+  height: 400px;
+  margin: 20px auto;
+  background: url("assets/backgrounds/arena_background.png") no-repeat center center;
   background-size: cover;
+  position: relative;
   overflow: hidden;
+  border: 4px solid #472d30;
+  box-shadow: 0 0 20px #00000080;
 }
 
-#player {
+/* Sprite base */
+.sprite {
+  width: 64px;   /* oppure 72px o 80px se vuoi ancora più grande */
+  height: 64px;
   position: absolute;
-  bottom: 0;
-  left: 100px;
-  width: 128px;
-  height: 128px;
   background-size: cover;
+}
+
+/* Giocatore */
+#player {
+  left: 100px;
+  bottom: 0;
+  background-image: url("assets/sprites/gladiator/walk_0.png");
+}
+
+/* Nemico */
+#enemy {
+  left: 600px;
+  bottom: 0;
+  background-image: url("https://i.imgur.com/I1uYobT.png");
 }
