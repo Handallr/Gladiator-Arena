@@ -1,3 +1,4 @@
+// gameOver.js
 export class GameOverState {
   constructor(sm) {
     this.sm = sm;
@@ -6,5 +7,5 @@ export class GameOverState {
     this.btn.addEventListener('click', () => this.sm.change('play'));
   }
   enter() { this.el.style.display = 'block'; }
-  exit()  { this.el.style.display = 'none'; }
+  exit()  { this.el.style.display = 'none';  }
 }

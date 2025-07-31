@@ -1,9 +1,10 @@
+// play.js
 import { Game } from './game.js';
 export class PlayState {
   constructor(sm) {
-    this.sm = sm;
+    this.sm    = sm;
     this.arena = document.getElementById('arena');
-    this.game = new Game();
+    this.game  = new Game();
   }
   enter() {
     this.arena.style.display = 'block';
@@ -14,6 +15,8 @@ export class PlayState {
   }
   update(dt) {
     this.game.update(dt);
-    if (this.game.isOver && this.game.isOver()) this.sm.change('gameover');
+    if (this.game.isOver && this.game.isOver()) {
+      this.sm.change('gameover');
+    }
   }
 }
