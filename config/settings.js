@@ -1,0 +1,1 @@
+// Impostazioni generali del gioco (es. velocità, gravità)
