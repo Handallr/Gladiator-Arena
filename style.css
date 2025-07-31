@@ -9,7 +9,8 @@ body {
   width: 800px;
   height: 400px;
   margin: 20px auto;
-  background: url('https://i.imgur.com/6vK0Tsl.png'); /* arena di sfondo */
+  background: url('arena_background.png') no-repeat center center;
+  background-size: cover;
   position: relative;
   overflow: hidden;
   border: 4px solid #472d30;
