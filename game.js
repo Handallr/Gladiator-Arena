@@ -1,3 +1,4 @@
+
 const player = document.getElementById("player");
 
 const walkFrames = [
@@ -9,6 +10,7 @@ const walkFrames = [
   "assets/sprites/gladiator/walk_5.png"
 ];
 
+const idleFrame = "assets/sprites/gladiator/idle_0.png";
 const attackFrame = "assets/sprites/gladiator/attack_0.png";
 const jumpFrame = "assets/sprites/gladiator/jump_0.png";
 
@@ -22,7 +24,7 @@ let direction = 0;
 let currentFrame = 0;
 let frameTimer = 0;
 
-// Tastiera
+// Input
 document.addEventListener("keydown", (e) => {
   if (e.key === "ArrowRight") direction = 1;
   if (e.key === "ArrowLeft") direction = -1;
@@ -45,9 +47,7 @@ document.addEventListener("keyup", (e) => {
   if (e.key === "ArrowLeft" && direction === -1) direction = 0;
 });
 
-// Loop di gioco
 function update() {
-  // Movimento verticale (salto)
   if (isJumping) {
     velocityY += gravity;
     positionY += velocityY;
@@ -59,15 +59,12 @@ function update() {
     }
   }
 
-  // Attacco
   if (isAttacking) {
     player.style.backgroundImage = `url(${attackFrame})`;
   }
-  // Salto
   else if (isJumping) {
     player.style.backgroundImage = `url(${jumpFrame})`;
   }
-  // Movimento
   else if (direction !== 0) {
     frameTimer++;
     if (frameTimer >= 6) {
@@ -76,15 +73,13 @@ function update() {
     }
     player.style.backgroundImage = `url(${walkFrames[currentFrame]})`;
   } else {
-    player.style.backgroundImage = `url(${walkFrames[0]})`;
+    player.style.backgroundImage = `url(${idleFrame})`;
   }
 
-  // Posizione X/Y
   positionX += direction * 2;
   player.style.left = `${positionX}px`;
   player.style.bottom = `${positionY}px`;
 
-  // Flip sinistra/destra
   player.style.transform = direction === -1 ? "scaleX(-1)" : "scaleX(1)";
 
   requestAnimationFrame(update);
