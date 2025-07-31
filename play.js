@@ -1,5 +1,6 @@
 // play.js
 import { Game } from './game.js';
+
 export class PlayState {
   constructor(sm) {
     this.sm    = sm;
@@ -15,7 +16,8 @@ export class PlayState {
   }
   update(dt) {
     this.game.update(dt);
-    if (this.game.isOver && this.game.isOver()) {
+    // Se il gioco finisce, vai allo stato GameOver
+    if (typeof this.game.isOver === 'function' && this.game.isOver()) {
       this.sm.change('gameover');
     }
   }
