@@ -1,93 +1,95 @@
-const player = document.getElementById("player");
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
 
-const walkFrames = [
-  "assets/sprites/gladiator/walk_0.png",
-  "assets/sprites/gladiator/walk_1.png",
-  "assets/sprites/gladiator/walk_2.png",
-  "assets/sprites/gladiator/walk_3.png",
-  "assets/sprites/gladiator/walk_4.png",
-  "assets/sprites/gladiator/walk_5.png"
-];
+const player = {
+  x: 100,
+  y: 300,
+  width: 64,
+  height: 64,
+  speed: 3,
+  frameIndex: 0,
+  frameTimer: 0,
+  direction: 0,
+  isJumping: false,
+  isAttacking: false,
+  velocityY: 0,
+  gravity: 0.5
+};
 
-const attackFrame = "assets/sprites/gladiator/attack_0.png";
-const jumpFrame = "assets/sprites/gladiator/jump_0.png";
+const walkFrames = [];
+for (let i = 0; i <= 5; i++) {
+  const img = new Image();
+  img.src = `assets/gladiator/walk_${i}.png`;
+  walkFrames.push(img);
+}
+const jumpImg = new Image();
+jumpImg.src = `assets/gladiator/jump_0.png`;
 
-let positionX = 100;
-let positionY = 0;
-let velocityY = 0;
-let gravity = 0.8;
-let isJumping = false;
-let isAttacking = false;
-let direction = 0;
-let currentFrame = 0;
-let frameTimer = 0;
+const attackImg = new Image();
+attackImg.src = `assets/gladiator/attack_0.png`;
 
-// Tastiera
-document.addEventListener("keydown", (e) => {
-  if (e.key === "ArrowRight") direction = 1;
-  if (e.key === "ArrowLeft") direction = -1;
-  if (e.key === "a" || e.key === "A") {
-    if (!isAttacking) {
-      isAttacking = true;
-      setTimeout(() => isAttacking = false, 300);
+function update() {
+  if (player.isJumping) {
+    player.velocityY += player.gravity;
+    player.y += player.velocityY;
+
+    if (player.y >= 300) {
+      player.y = 300;
+      player.isJumping = false;
+      player.velocityY = 0;
     }
   }
-  if (e.key === "w" || e.key === "W") {
-    if (!isJumping) {
-      velocityY = -12;
-      isJumping = true;
+
+  player.x += player.direction * player.speed;
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  let imgToDraw = walkFrames[0];
+  if (player.isAttacking) imgToDraw = attackImg;
+  else if (player.isJumping) imgToDraw = jumpImg;
+  else if (player.direction !== 0) {
+    imgToDraw = walkFrames[player.frameIndex];
+    player.frameTimer++;
+    if (player.frameTimer > 6) {
+      player.frameIndex = (player.frameIndex + 1) % walkFrames.length;
+      player.frameTimer = 0;
     }
+  }
+
+  ctx.save();
+  if (player.direction === -1) {
+    ctx.scale(-1, 1);
+    ctx.drawImage(imgToDraw, -player.x - player.width, player.y, player.width, player.height);
+  } else {
+    ctx.drawImage(imgToDraw, player.x, player.y, player.width, player.height);
+  }
+  ctx.restore();
+}
+
+function gameLoop() {
+  update();
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight") player.direction = 1;
+  if (e.key === "ArrowLeft") player.direction = -1;
+  if (e.key === "w" && !player.isJumping) {
+    player.isJumping = true;
+    player.velocityY = -10;
+  }
+  if (e.key === "a") {
+    player.isAttacking = true;
+    setTimeout(() => player.isAttacking = false, 300);
   }
 });
 
 document.addEventListener("keyup", (e) => {
-  if (e.key === "ArrowRight" && direction === 1) direction = 0;
-  if (e.key === "ArrowLeft" && direction === -1) direction = 0;
+  if (e.key === "ArrowRight" && player.direction === 1) player.direction = 0;
+  if (e.key === "ArrowLeft" && player.direction === -1) player.direction = 0;
 });
 
-// Loop di gioco
-function update() {
-  // Movimento verticale (salto)
-  if (isJumping) {
-    velocityY += gravity;
-    positionY += velocityY;
-
-    if (positionY >= 0) {
-      positionY = 0;
-      velocityY = 0;
-      isJumping = false;
-    }
-  }
-
-  // Attacco
-  if (isAttacking) {
-    player.style.backgroundImage = `url(${attackFrame})`;
-  }
-  // Salto
-  else if (isJumping) {
-    player.style.backgroundImage = `url(${jumpFrame})`;
-  }
-  // Movimento
-  else if (direction !== 0) {
-    frameTimer++;
-    if (frameTimer >= 6) {
-      currentFrame = (currentFrame + 1) % walkFrames.length;
-      frameTimer = 0;
-    }
-    player.style.backgroundImage = `url(${walkFrames[currentFrame]})`;
-  } else {
-    player.style.backgroundImage = `url(${walkFrames[0]})`;
-  }
-
-  // Posizione X/Y
-  positionX += direction * 2;
-  player.style.left = `${positionX}px`;
-  player.style.bottom = `${positionY}px`;
-
-  // Flip sinistra/destra
-  player.style.transform = direction === -1 ? "scaleX(-1)" : "scaleX(1)";
-
-  requestAnimationFrame(update);
-}
-
-update();
+gameLoop();
