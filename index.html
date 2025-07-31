@@ -2,34 +2,25 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Gladiatore Arena</title>
+  <title>Gladiatore Arena - Achilles Style</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <h1>🏛️ Gladiatore Arena</h1>
-  <div id="arena">
-    <div id="player" class="sprite idle"></div>
-    <div id="enemy" class="sprite idle"></div>
+
+  <!-- Schermate di gioco -->
+  <div id="menu">
+    <button id="startBtn">Start Game</button>
   </div>
 
-  <div id="hud">
-    <div class="health">
-      <span>Giocatore</span>
-      <div class="bar"><div id="playerHP" class="fill"></div></div>
-    </div>
-    <div class="health">
-      <span>Nemico</span>
-      <div class="bar"><div id="enemyHP" class="fill"></div></div>
-    </div>
-    <div id="score">Punti: 0</div>
-    <div id="controls">
-      <h2>Comandi</h2>
-      <div class="row"><kbd>A</kbd>/<kbd>←</kbd> Walk Left</div>
-      <div class="row"><kbd>D</kbd>/<kbd>→</kbd> Walk Right</div>
-      <div class="row"><kbd>W</kbd>/<kbd>↑</kbd> Jump</div>
-      <div class="row"><kbd>S</kbd>/<kbd>↓</kbd> Block</div>
-      <div class="row"><kbd>Space</kbd> Attack</div>
-    </div>
+  <div id="arena" style="display:none;">
+    <div id="player" class="sprite idle"></div>
+    <div id="enemy"  class="sprite idle"></div>
+  </div>
+
+  <div id="gameOver" style="display:none;">
+    <h2>Game Over</h2>
+    <button id="restartBtn">Restart</button>
   </div>
 
   <script type="module" src="main.js"></script>
