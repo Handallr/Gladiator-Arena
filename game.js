@@ -1,95 +1,63 @@
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-const player = {
-  x: 100,
-  y: 300,
-  width: 64,
-  height: 64,
-  speed: 3,
-  frameIndex: 0,
-  frameTimer: 0,
-  direction: 0,
-  isJumping: false,
-  isAttacking: false,
+const gladiatorImage = new Image();
+gladiatorImage.src = "assets/gladiator.png";
+
+let player = {
+  x: 50,
+  y: canvas.height - 80,
+  width: 50,
+  height: 70,
   velocityY: 0,
-  gravity: 0.5
+  jumpPower: -12,
+  gravity: 0.6,
+  isJumping: false,
+  speed: 4
 };
 
-const walkFrames = [];
-for (let i = 0; i <= 5; i++) {
-  const img = new Image();
-  img.src = `assets/gladiator/walk_${i}.png`;
-  walkFrames.push(img);
-}
-const jumpImg = new Image();
-jumpImg.src = `assets/gladiator/jump_0.png`;
+let keys = {};
 
-const attackImg = new Image();
-attackImg.src = `assets/gladiator/attack_0.png`;
+window.addEventListener("keydown", e => keys[e.key] = true);
+window.addEventListener("keyup", e => keys[e.key] = false);
 
 function update() {
-  if (player.isJumping) {
-    player.velocityY += player.gravity;
-    player.y += player.velocityY;
+  // Movimento orizzontale
+  if (keys["ArrowRight"]) player.x += player.speed;
+  if (keys["ArrowLeft"]) player.x -= player.speed;
 
-    if (player.y >= 300) {
-      player.y = 300;
-      player.isJumping = false;
-      player.velocityY = 0;
+  // Salto
+  if (keys["w"] || keys["W"]) {
+    if (!player.isJumping) {
+      player.velocityY = player.jumpPower;
+      player.isJumping = true;
     }
   }
 
-  player.x += player.direction * player.speed;
+  // Gravità
+  player.y += player.velocityY;
+  player.velocityY += player.gravity;
+
+  // Atterra sul suolo
+  if (player.y >= canvas.height - player.height) {
+    player.y = canvas.height - player.height;
+    player.velocityY = 0;
+    player.isJumping = false;
+  }
 }
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  let imgToDraw = walkFrames[0];
-  if (player.isAttacking) imgToDraw = attackImg;
-  else if (player.isJumping) imgToDraw = jumpImg;
-  else if (player.direction !== 0) {
-    imgToDraw = walkFrames[player.frameIndex];
-    player.frameTimer++;
-    if (player.frameTimer > 6) {
-      player.frameIndex = (player.frameIndex + 1) % walkFrames.length;
-      player.frameTimer = 0;
-    }
-  }
-
-  ctx.save();
-  if (player.direction === -1) {
-    ctx.scale(-1, 1);
-    ctx.drawImage(imgToDraw, -player.x - player.width, player.y, player.width, player.height);
-  } else {
-    ctx.drawImage(imgToDraw, player.x, player.y, player.width, player.height);
-  }
-  ctx.restore();
+  ctx.drawImage(gladiatorImage, player.x, player.y, player.width, player.height);
 }
 
-function gameLoop() {
+function loop() {
   update();
   draw();
-  requestAnimationFrame(gameLoop);
+  requestAnimationFrame(loop);
 }
 
-document.addEventListener("keydown", (e) => {
-  if (e.key === "ArrowRight") player.direction = 1;
-  if (e.key === "ArrowLeft") player.direction = -1;
-  if (e.key === "w" && !player.isJumping) {
-    player.isJumping = true;
-    player.velocityY = -10;
-  }
-  if (e.key === "a") {
-    player.isAttacking = true;
-    setTimeout(() => player.isAttacking = false, 300);
-  }
-});
-
-document.addEventListener("keyup", (e) => {
-  if (e.key === "ArrowRight" && player.direction === 1) player.direction = 0;
-  if (e.key === "ArrowLeft" && player.direction === -1) player.direction = 0;
-});
-
-gameLoop();
+gladiatorImage.onload = () => {
+  loop();
+};
