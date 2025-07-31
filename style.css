@@ -1,4 +1,4 @@
-/* Reset e body */
+/* style.css */
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
   background-color: #222;
@@ -8,107 +8,83 @@ body {
   justify-content: center;
   padding: 20px;
 }
-
-/* Contenitore di gioco */
-#game-container {
-  width: 800px;
-  max-width: 100%;
-}
-
-/* Titolo */
-h1 {
-  text-align: center;
-  margin-bottom: 10px;
-}
-
-/* Arena */
+#game-container { width: 800px; max-width:100%; }
+h1 { text-align:center; margin-bottom:10px; }
 #arena {
-  width: 800px;
-  height: 200px;
-  background: #555;
-  margin: 0 auto;
-  position: relative;
-  overflow: hidden;
+  width:800px; height:200px; margin:0 auto;
+  background:#555; position:relative; overflow:hidden;
 }
 
-/* Sprite */
+/* === SPRITE SETUP === */
 .sprite {
-  position: absolute;
-  bottom: 0;
-  width: 64px;
-  height: 64px;
-  background-size: 384px 64px; /* 6 frame × 64px */
-  background-repeat: no-repeat;
+  position:absolute;
+  bottom:0;
+  width:64px; height:64px;
+  background-repeat:no-repeat;
+  /* 6×4 frames → 384×256 px */
+  background-size: 384px 256px;
+  image-rendering: pixelated;
 }
 
-/* Immagini sprite */
+/* punti di partenza statici */
+.idle {
+  background-position: 0 0;
+}
+
+/* keyframes: camminata su riga 0 */
+@keyframes walk {
+  from { background-position:   0    0; }
+    to { background-position:  -320px 0; }
+}
+/* attacco su riga 1 */
+@keyframes attack {
+  from { background-position:   0   -64px; }
+    to { background-position: -320px -64px; }
+}
+/* parata su riga 2 */
+@keyframes defend {
+  from { background-position:   0  -128px; }
+    to { background-position: -320px -128px; }
+}
+/* salto su riga 3 */
+@keyframes jump {
+  from { background-position:   0  -192px; }
+    to { background-position: -320px -192px; }
+}
+
+/* classi che attivano l’animazione */
+.walk {
+  animation: walk    600ms steps(6) infinite;
+}
+.attack {
+  animation: attack  400ms steps(6) forwards;
+}
+.defend {
+  animation: defend  400ms steps(6) forwards;
+}
+.jump {
+  animation: jump    600ms steps(6) forwards;
+}
+
+/* posizionamento dei due pg */
 #player {
   background-image: url("img/gladiatore_sprite.png");
   left: 100px;
 }
 #enemy {
   background-image: url("img/nemico_sprite.png");
-  left: 736px; /* 800 - 64 */
+  left: 736px;
 }
 
-/* Frame via background-position */
-.idle   { background-position:   0   0; }
-.walk1  { background-position: -64px  0; }
-.walk2  { background-position: -128px 0; }
-.attack { background-position: -192px 0; }
-.jump   { background-position: -256px 0; }
-.defend { background-position: -320px 0; }
-
-/* HUD */
+/* HUD e comandi rimangono invariati… */
 #hud {
-  background: #333;
-  padding: 10px;
-  margin-top: 10px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
+  background: #333; padding:10px; margin-top:10px;
+  display:flex; flex-wrap:wrap;
+  justify-content:space-between;
+  align-items:center;
 }
-.health {
-  flex: 1;
-  min-width: 200px;
-  margin: 5px;
-}
-.health span {
-  display: block;
-  margin-bottom: 4px;
-}
+.health { flex:1; min-width:200px; margin:5px; }
+.health span { display:block; margin-bottom:4px; }
 .bar {
-  width: 100%;
-  height: 16px;
-  background: #555;
-  border: 1px solid #fff;
-}
-.fill {
-  height: 100%;
-  background: #0f0;
-  width: 100%;
-}
-#score {
-  flex: 0 0 auto;
-  margin: 5px;
-}
-#controls {
-  flex: 1 1 100%;
-  margin-top: 10px;
-}
-#controls h2 {
-  margin-bottom: 6px;
-}
-.row {
-  margin: 2px 0;
-  font-size: 14px;
-}
-kbd {
-  background: #444;
-  border: 1px solid #fff;
-  padding: 2px 6px;
-  margin-right: 4px;
-  border-radius: 3px;
-  font-family: monospace;
-}
+  width:100%; height:16px;
+  background:
