@@ -21,10 +21,10 @@ body {
 
 /* Sprite base */
 .sprite {
+  width: 64px;   /* oppure 72px o 80px se vuoi ancora più grande */
+  height: 64px;
   position: absolute;
-  width: 48px;
-  height: 48px;
-  image-rendering: pixelated;
+  background-size: cover;
 }
 
 /* Giocatore */
