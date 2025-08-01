@@ -1,73 +1,91 @@
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
 
 const player = {
-    x: 100,
-    y: 300,
-    width: 50,
-    height: 50,
-    color: "red",
-    velocityY: 0,
-    speed: 3,
-    isJumping: false,
-    isAttacking: false,
-    hp: 100
+  x: 100,
+  y: GAME_SETTINGS.groundY,
+  vx: 0,
+  vy: 0,
+  width: 64,
+  height: 64,
+  hp: GAME_SETTINGS.maxHP,
+  isJumping: false,
+  isAttacking: false,
+  currentFrame: 0,
+  frameCount: 6,
+  frameTimer: 0,
+  frameInterval: 1000 / 10, // 10 FPS di animazione
 };
 
-const gravity = 0.5;
-let keys = {};
+let lastTime = 0;
 
-// Mobile input handlers
-document.getElementById("leftBtn").addEventListener("touchstart", () => keys["ArrowLeft"] = true);
-document.getElementById("leftBtn").addEventListener("touchend", () => keys["ArrowLeft"] = false);
-document.getElementById("rightBtn").addEventListener("touchstart", () => keys["ArrowRight"] = true);
-document.getElementById("rightBtn").addEventListener("touchend", () => keys["ArrowRight"] = false);
-document.getElementById("jumpBtn").addEventListener("touchstart", () => {
-    if (!player.isJumping) {
-        player.velocityY = -10;
-        player.isJumping = true;
-    }
-});
-document.getElementById("attackBtn").addEventListener("touchstart", () => {
-    if (!player.isAttacking) {
-        player.isAttacking = true;
-        setTimeout(() => player.isAttacking = false, 300);
-    }
-});
+function loop(timestamp) {
+  const dt = (timestamp - lastTime) / (1000 / GAME_SETTINGS.fps);
+  lastTime = timestamp;
 
-document.addEventListener("keydown", (e) => keys[e.key] = true);
-document.addEventListener("keyup", (e) => keys[e.key] = false);
+  update(dt);
+  draw();
 
-function update() {
-    if (keys["ArrowRight"]) player.x += player.speed;
-    if (keys["ArrowLeft"]) player.x -= player.speed;
+  requestAnimationFrame(loop);
+}
 
-    // Jump physics
-    player.velocityY += gravity;
-    player.y += player.velocityY;
-    if (player.y > 300) {
-        player.y = 300;
-        player.velocityY = 0;
-        player.isJumping = false;
-    }
+function update(dt) {
+  // Fisica
+  player.vy += GAME_SETTINGS.gravity * dt;
+  player.x += player.vx * dt;
+  player.y += player.vy * dt;
+
+  // Collisione con il terreno
+  if (player.y > GAME_SETTINGS.groundY) {
+    player.y = GAME_SETTINGS.groundY;
+    player.vy = 0;
+    player.isJumping = false;
+  }
+
+  // Clamping dei confini
+  player.x = Math.max(0, Math.min(GAME_SETTINGS.canvasWidth - player.width, player.x));
+
+  // Animazione frame
+  player.frameTimer += dt * 1000;
+  if (player.frameTimer > player.frameInterval) {
+    player.currentFrame = (player.currentFrame + 1) % player.frameCount;
+    player.frameTimer = 0;
+  }
 }
 
 function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // Pulisce lo schermo
+  ctx.clearRect(0, 0, GAME_SETTINGS.canvasWidth, GAME_SETTINGS.canvasHeight);
 
-    // Draw HP
-    ctx.fillStyle = "white";
-    ctx.fillText("HP: " + player.hp, 10, 20);
+  // Disegna lo sprite del giocatore
+  const sx = player.currentFrame * player.width;
+  ctx.drawImage(
+    images.player,
+    sx, 0, player.width, player.height,
+    player.x, player.y - player.height,
+    player.width, player.height
+  );
 
-    // Draw player
-    ctx.fillStyle = player.isAttacking ? "orange" : player.color;
-    ctx.fillRect(player.x, player.y, player.width, player.height);
+  // Barra HP
+  const barWidth = 200;
+  ctx.fillStyle = 'red';
+  ctx.fillRect(10, 30, barWidth, 20);
+  ctx.fillStyle = 'green';
+  ctx.fillRect(10, 30, barWidth * (player.hp / GAME_SETTINGS.maxHP), 20);
+  ctx.strokeStyle = 'white';
+  ctx.strokeRect(10, 30, barWidth, 20);
+  ctx.fillStyle = 'white';
+  ctx.font = '16px sans-serif';
+  ctx.fillText(`${player.hp} HP`, 15, 45);
 }
 
-function loop() {
-    update();
-    draw();
-    requestAnimationFrame(loop);
-}
+// Input di attacco
+document.getElementById('attackBtn').addEventListener('click', () => {
+  if (!player.isAttacking) {
+    player.isAttacking = true;
+    setTimeout(() => { player.isAttacking = false; }, 300);
+  }
+});
 
-loop();
+// Avvia il gioco dopo il caricamento asset
+loadAssets(() => requestAnimationFrame(loop));

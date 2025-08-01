@@ -1,21 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Gladiator Arena Mobile</title>
-    <link rel="stylesheet" href="styles/style.css" />
+  <meta charset="UTF-8">
+  <title>Gladiator Arena</title>
+  <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
-    <canvas id="gameCanvas" width="800" height="400"></canvas>
+  <canvas id="gameCanvas" width="800" height="600"></canvas>
+  <button id="attackBtn">Attack</button>
 
-    <div id="mobileControls">
-        <button id="leftBtn">←</button>
-        <button id="rightBtn">→</button>
-        <button id="jumpBtn">↑</button>
-        <button id="attackBtn">X</button>
-    </div>
-
-    <script src="scripts/game.js"></script>
+  <!-- Caricamento configurazioni e script -->
+  <script src="config/settings.js"></script>
+  <script src="scripts/assetLoader.js"></script>
+  <script src="scripts/game.js"></script>
 </body>
 </html>
