@@ -1,69 +1,62 @@
+import { loadAssets } from './assetLoader.js';
 import ECS from './ecs.js';
-import { Position, Velocity, Input, Health, Attack } from './components.js';
+import * as C from './components.js';
 import { inputSystem } from './inputSystem.js';
 import { movementSystem } from './movementSystem.js';
 import { attackSystem } from './attackSystem.js';
-import { EventQueue }    from './eventQueue.js';
+import { renderSystem } from './renderSystem.js';
+import { EventQueue } from './eventQueue.js';
 import { GAME_SETTINGS } from '../config/settings.js';
-
-const events = new EventQueue();
-let lastTime = 0;
 
 // Create player entity
 const player = ECS.createEntity();
-ECS.addComponent(player, Position, { x: 100, y: GAME_SETTINGS.groundY, w: 50, h: 50 });
-ECS.addComponent(player, Velocity, { x: 0, y: 0 });
-ECS.addComponent(player, Input,   { left: false, right: false, up: false, down: false, attack: false, jumping: false, crouch: false });
-ECS.addComponent(player, Health,  { current: 100, max: 100 });
-ECS.addComponent(player, Attack,  { damage: 10, cooldown: 0, targets: [] });
+ECS.addComponent(player, C.Position, { x:100, y:GAME_SETTINGS.groundY, w:50, h:50 });
+ECS.addComponent(player, C.Velocity, { x:0, y:0 });
+ECS.addComponent(player, C.Health,   { current:100, max:100 });
+ECS.addComponent(player, C.Attack,   { damage:10, cooldown:0, targets:[] });
+ECS.addComponent(player, C.Input,    { left:false, right:false, up:false, down:false, jumping:false, crouch:false });
+ECS.addComponent(player, C.Render,   { color:'blue' });
 
-// Setup input listeners
-document.addEventListener('keydown', e => {
-  const inp = ECS.getComponent(player, Input);
+const events = new EventQueue();
+let lastTime = performance.now();
+
+// Keyboard input
+window.addEventListener('keydown', e => {
+  const inp = ECS.getComponent(player, C.Input);
   switch(e.key) {
-    case 'ArrowLeft': inp.left = true; break;
-    case 'ArrowRight': inp.right = true; break;
-    case 'ArrowUp': inp.up = true; break;
-    case 'ArrowDown': inp.down = true; break;
+    case 'ArrowLeft': case 'a': inp.left = true; break;
+    case 'ArrowRight': case 'd': inp.right = true; break;
+    case 'ArrowUp': case 'w': inp.up = true; break;
+    case 'ArrowDown': case 's': inp.down = true; break;
     case ' ': inp.attack = true; e.preventDefault(); break;
   }
 });
-document.addEventListener('keyup', e => {
-  const inp = ECS.getComponent(player, Input);
+window.addEventListener('keyup', e => {
+  const inp = ECS.getComponent(player, C.Input);
   switch(e.key) {
-    case 'ArrowLeft': inp.left = false; break;
-    case 'ArrowRight': inp.right = false; break;
-    case 'ArrowUp': inp.up = false; break;
-    case 'ArrowDown': inp.down = false; break;
+    case 'ArrowLeft': case 'a': inp.left = false; break;
+    case 'ArrowRight': case 'd': inp.right = false; break;
+    case 'ArrowUp': case 'w': inp.up = false; break;
+    case 'ArrowDown': case 's': inp.down = false; break;
     case ' ': inp.attack = false; break;
   }
 });
 
-function renderSystem() {
-  const canvas = document.getElementById('gameCanvas');
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, GAME_SETTINGS.canvasWidth, GAME_SETTINGS.canvasHeight);
-  // draw player
-  const pos = ECS.getComponent(player, Position);
-  ctx.fillStyle = 'blue';
-  ctx.fillRect(pos.x, pos.y - pos.h, pos.w, pos.h);
-  // draw HP
-  ctx.fillStyle = 'red';
-  ctx.fillRect(10, 10, 200, 20);
-  ctx.fillStyle = 'green';
-  const hp = ECS.getComponent(player, Health);
-  ctx.fillRect(10, 10, 200 * (hp.current / hp.max), 20);
-}
+// Mobile buttons
+document.getElementById('btnLeft').addEventListener('touchstart', () => C.Input.left = true);
+document.getElementById('btnLeft').addEventListener('touchend',   () => C.Input.left = false);
+// (Similarly for other buttons... skipped for brevity)
 
-function gameLoop(timestamp) {
-  const dt = (timestamp - lastTime) / (1000 / GAME_SETTINGS.fps);
-  lastTime = timestamp;
-  events.process();
-  inputSystem();
-  movementSystem(dt);
-  attackSystem();
-  renderSystem();
-  requestAnimationFrame(gameLoop);
-}
-
-requestAnimationFrame(gameLoop);
+loadAssets(() => {
+  function loop(ts) {
+    const dt = (ts - lastTime) / (1000 / GAME_SETTINGS.fps);
+    lastTime = ts;
+    events.process();
+    inputSystem();
+    movementSystem(dt);
+    attackSystem();
+    renderSystem();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+});

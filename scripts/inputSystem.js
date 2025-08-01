@@ -1,5 +1,5 @@
 import ECS from './ecs.js';
-import { Velocity, Input } from './components.js';
+import { Input, Velocity } from './components.js';
 import { GAME_SETTINGS } from '../config/settings.js';
 
 export function inputSystem() {
@@ -13,6 +13,6 @@ export function inputSystem() {
       vel.y = GAME_SETTINGS.jumpForce;
       inp.jumping = true;
     }
-    inp.crouch = inp.down && !inp.jumping;
+    inp.up = false;
   }
 }

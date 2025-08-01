@@ -1,4 +1,3 @@
-// Simple ECS implementation
 const ECS = {
   _nextId: 1,
   entities: new Set(),
