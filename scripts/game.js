@@ -42,10 +42,20 @@ window.addEventListener('keyup', e => {
   }
 });
 
-// Mobile buttons
-document.getElementById('btnLeft').addEventListener('touchstart', () => C.Input.left = true);
-document.getElementById('btnLeft').addEventListener('touchend',   () => C.Input.left = false);
-// (Similarly for other buttons... skipped for brevity)
+// Health HUD update
+function updateHUD() {
+  const hp = ECS.getComponent(player, C.Health);
+  const fill = document.getElementById('healthFill');
+  const text = document.getElementById('healthText');
+  const pct = hp.current / hp.max * 100;
+  fill.style.width = pct + '%';
+  text.textContent = hp.current;
+}
+
+// Mobile buttons (example)
+document.getElementById('btnLeft').addEventListener('touchstart', () => ECS.getComponent(player, C.Input).left = true);
+document.getElementById('btnLeft').addEventListener('touchend',   () => ECS.getComponent(player, C.Input).left = false);
+// TODO: add other buttons similarly
 
 loadAssets(() => {
   function loop(ts) {
@@ -56,6 +66,7 @@ loadAssets(() => {
     movementSystem(dt);
     attackSystem();
     renderSystem();
+    updateHUD();
     requestAnimationFrame(loop);
   }
   requestAnimationFrame(loop);

@@ -6,7 +6,16 @@
   <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
-  <canvas id="gameCanvas" width="800" height="600"></canvas>
+  <div id="gameContainer">
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div id="hud">
+      <span id="playerName">Achilles</span>
+      <div id="healthBar">
+        <div id="healthFill"></div>
+        <span id="healthText">100</span>
+      </div>
+    </div>
+  </div>
   <div id="mobileControls">
     <button id="btnLeft">◀</button>
     <button id="btnRight">▶</button>
