@@ -1,41 +1,21 @@
-﻿<!DOCTYPE html>
-
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="utf-8"/>
-<!-- The actual resolution of the NES is 256x240.
-         Ideally, we draw in this size and scale appropriately.-->
-<title>Super Mario Bros</title>
-<meta content="" name="description"/>
-<meta content="width=device-width" name="viewport"/>
-<link href="css/game.css" rel="stylesheet"/>
+  <meta charset="UTF-8" />
+  <title>Gladiator Arena - Test</title>
+  <link rel="stylesheet" href="styles/style.css" />
 </head>
 <body>
-<script src="js/util.js" type="text/javascript"></script>
-<script src="js/input.js" type="text/javascript"></script>
-<script src="js/resources.js" type="text/javascript"></script>
-<script src="js/sprite.js" type="text/javascript"></script>
-<script src="js/entity.js" type="text/javascript"></script>
-<script src="js/pipe.js" type="text/javascript"></script>
-<script src="js/mushroom.js" type="text/javascript"></script>
-<script src="js/fireflower.js" type="text/javascript"></script>
-<script src="js/star.js" type="text/javascript"></script>
-<script src="js/fireball.js" type="text/javascript"></script>
-<script src="js/coin.js" type="text/javascript"></script>
-<script src="js/bcoin.js" type="text/javascript"></script>
-<script src="js/goomba.js" type="text/javascript"></script>
-<script src="js/koopa.js" type="text/javascript"></script>
-<script src="js/floor.js" type="text/javascript"></script>
-<script src="js/block.js" type="text/javascript"></script>
-<script src="js/rubble.js" type="text/javascript"></script>
-<script src="js/prop.js" type="text/javascript"></script>
-<script src="js/player.js" type="text/javascript"></script>
-<script src="js/flag.js" type="text/javascript"></script>
-<script src="js/levels/level.js" type="text/javascript"></script>
-<script src="js/levels/11.js" type="text/javascript"></script>
-<script src="js/levels/11tunnel.js" type="text/javascript"></script>
-<script src="js/game.js" type="text/javascript"></script>
-<div class="info">
-<p class="controls"></p>
-</div></body>
+  <div id="game-container">
+    <canvas id="gameCanvas" width="800" height="450"></canvas>
+    <div id="controls">
+      <button id="left">◀️</button>
+      <button id="right">▶️</button>
+      <button id="up">🔼</button>
+      <button id="down">🔽</button>
+      <button id="attack">Attack</button>
+    </div>
+  </div>
+  <script src="scripts/main.js"></script>
+</body>
 </html>
