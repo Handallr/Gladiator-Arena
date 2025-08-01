@@ -11,3 +11,20 @@ canvas {
   background: url("assets/bg.png") center/cover no-repeat;
   border: 2px solid #fff;
 }
+#hp-bar {
+    width: 200px;
+    height: 20px;
+    background-color: #444;
+    border: 2px solid #fff;
+    margin: 10px auto;
+    position: relative;
+}
+#hp-fill {
+    height: 100%;
+    width: 100%;
+    background-color: green;
+    color: white;
+    text-align: center;
+    line-height: 20px;
+    font-weight: bold;
+}
