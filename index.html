@@ -1,25 +1,21 @@
-
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Gladiatore Arena (Canvas)</title>
-  <style>
-    body {
-      background-color: #222;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-    canvas {
-      border: 2px solid white;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Gladiator Arena Mobile</title>
+    <link rel="stylesheet" href="styles/style.css" />
 </head>
 <body>
-  <canvas id="gameCanvas" width="800" height="400"></canvas>
-  <script src="game.js"></script>
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+
+    <div id="mobileControls">
+        <button id="leftBtn">←</button>
+        <button id="rightBtn">→</button>
+        <button id="jumpBtn">↑</button>
+        <button id="attackBtn">X</button>
+    </div>
+
+    <script src="scripts/game.js"></script>
 </body>
 </html>
