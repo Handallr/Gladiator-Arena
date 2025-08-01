@@ -13,12 +13,4 @@ export function renderSystem() {
     ctx.fillRect(pos.x, pos.y - pos.h, pos.w, pos.h);
   }
   const barW = 50;
-  for (const e of ECS.query([Position, Health])) {
-    const pos = ECS.getComponent(e, Position);
-    const hp = ECS.getComponent(e, Health);
-    const x = pos.x;
-    const y = pos.y - pos.h - 10;
-    ctx.fillStyle = 'red'; ctx.fillRect(x, y, barW, 5);
-    ctx.fillStyle = 'green'; ctx.fillRect(x, y, barW * (hp.current / hp.max), 5);
-  }
 }
