@@ -1,88 +1,69 @@
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+import ECS from './ecs.js';
+import { Position, Velocity, Input, Health, Attack } from './components.js';
+import { inputSystem } from './inputSystem.js';
+import { movementSystem } from './movementSystem.js';
+import { attackSystem } from './attackSystem.js';
+import { EventQueue }    from './eventQueue.js';
+import { GAME_SETTINGS } from '../config/settings.js';
 
-// Player placeholder come cubo
-const player = {
-  x: 100,
-  y: GAME_SETTINGS.groundY,
-  vx: 0,
-  vy: 0,
-  width: 50,
-  height: 50,
-  hp: GAME_SETTINGS.maxHP,
-  isJumping: false,
-  isCrouching: false,
-  isAttacking: false,
-};
-
+const events = new EventQueue();
 let lastTime = 0;
 
-function loop(timestamp) {
+// Create player entity
+const player = ECS.createEntity();
+ECS.addComponent(player, Position, { x: 100, y: GAME_SETTINGS.groundY, w: 50, h: 50 });
+ECS.addComponent(player, Velocity, { x: 0, y: 0 });
+ECS.addComponent(player, Input,   { left: false, right: false, up: false, down: false, attack: false, jumping: false, crouch: false });
+ECS.addComponent(player, Health,  { current: 100, max: 100 });
+ECS.addComponent(player, Attack,  { damage: 10, cooldown: 0, targets: [] });
+
+// Setup input listeners
+document.addEventListener('keydown', e => {
+  const inp = ECS.getComponent(player, Input);
+  switch(e.key) {
+    case 'ArrowLeft': inp.left = true; break;
+    case 'ArrowRight': inp.right = true; break;
+    case 'ArrowUp': inp.up = true; break;
+    case 'ArrowDown': inp.down = true; break;
+    case ' ': inp.attack = true; e.preventDefault(); break;
+  }
+});
+document.addEventListener('keyup', e => {
+  const inp = ECS.getComponent(player, Input);
+  switch(e.key) {
+    case 'ArrowLeft': inp.left = false; break;
+    case 'ArrowRight': inp.right = false; break;
+    case 'ArrowUp': inp.up = false; break;
+    case 'ArrowDown': inp.down = false; break;
+    case ' ': inp.attack = false; break;
+  }
+});
+
+function renderSystem() {
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, GAME_SETTINGS.canvasWidth, GAME_SETTINGS.canvasHeight);
+  // draw player
+  const pos = ECS.getComponent(player, Position);
+  ctx.fillStyle = 'blue';
+  ctx.fillRect(pos.x, pos.y - pos.h, pos.w, pos.h);
+  // draw HP
+  ctx.fillStyle = 'red';
+  ctx.fillRect(10, 10, 200, 20);
+  ctx.fillStyle = 'green';
+  const hp = ECS.getComponent(player, Health);
+  ctx.fillRect(10, 10, 200 * (hp.current / hp.max), 20);
+}
+
+function gameLoop(timestamp) {
   const dt = (timestamp - lastTime) / (1000 / GAME_SETTINGS.fps);
   lastTime = timestamp;
-
-  update(dt);
-  draw();
-  requestAnimationFrame(loop);
+  events.process();
+  inputSystem();
+  movementSystem(dt);
+  attackSystem();
+  renderSystem();
+  requestAnimationFrame(gameLoop);
 }
 
-function update(dt) {
-  // Input per movimento orizzontale
-  player.vx = 0;
-  if (inputState.left)  player.vx = -200;
-  if (inputState.right) player.vx =  200;
-
-  // Salto
-  if (inputState.up && !player.isJumping) {
-    player.vy = GAME_SETTINGS.jumpForce;
-    player.isJumping = true;
-  }
-
-  // Abbassarsi
-  player.isCrouching = inputState.down && !player.isJumping;
-
-  // Attacco
-  if (inputState.attack && !player.isAttacking) {
-    player.isAttacking = true;
-    // gestisci danno: console.log o callback
-    console.log('Attacco: inflitto 10 danni');
-    setTimeout(() => player.isAttacking = false, 300);
-  }
-
-  // Fisica
-  player.vy += GAME_SETTINGS.gravity * dt;
-  player.x += player.vx * dt;
-  player.y += player.vy * dt;
-
-  // Collisione con il terreno
-  if (player.y > GAME_SETTINGS.groundY) {
-    player.y = GAME_SETTINGS.groundY;
-    player.vy = 0;
-    player.isJumping = false;
-  }
-
-  // Clamping confini
-  player.x = Math.max(0, Math.min(GAME_SETTINGS.canvasWidth - player.width, player.x));
-
-  // Riduci altezza se accovacciato
-  if (player.isCrouching) player.height = 30;
-  else player.height = 50;
-}
-
-function draw() {
-  ctx.clearRect(0, 0, GAME_SETTINGS.canvasWidth, GAME_SETTINGS.canvasHeight);
-
-  // Disegna player
-  ctx.fillStyle = player.isAttacking ? 'orange' : 'blue';
-  ctx.fillRect(player.x, player.y - player.height, player.width, player.height);
-
-  // Barra HP
-  const barW = 200;
-  ctx.fillStyle = 'red'; ctx.fillRect(10,10,barW,20);
-  ctx.fillStyle = 'green'; ctx.fillRect(10,10,barW*(player.hp/GAME_SETTINGS.maxHP),20);
-  ctx.strokeStyle = 'white'; ctx.strokeRect(10,10,barW,20);
-  ctx.fillStyle = 'white'; ctx.font='16px sans-serif'; ctx.fillText(player.hp+' HP',15,25);
-}
-
-// Avvia
-requestAnimationFrame(loop);
+requestAnimationFrame(gameLoop);
