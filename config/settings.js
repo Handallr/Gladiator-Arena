@@ -1,10 +1,7 @@
-// Impostazioni globali di gioco
+// config/settings.js
+// In futuro potremo aggiungere qui costanti come velocità, gravità, danni, ecc.
+
 const GAME_SETTINGS = {
-  canvasWidth: 800,
-  canvasHeight: 600,
-  gravity: 0.5,
-  jumpForce: -12,
-  groundY: 500,
-  maxHP: 100,
-  fps: 60,
+  playerSpeed: 2,
+  animationSpeed: 120
 };

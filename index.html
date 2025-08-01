@@ -7,11 +7,18 @@
 </head>
 <body>
   <canvas id="gameCanvas" width="800" height="600"></canvas>
-  <button id="attackBtn">Attack</button>
 
-  <!-- Caricamento configurazioni e script -->
+  <!-- Mobile controls -->
+  <div id="mobileControls">
+    <button id="btnLeft">◀</button>
+    <button id="btnRight">▶</button>
+    <button id="btnUp">▲</button>
+    <button id="btnDown">▼</button>
+    <button id="attackBtn">Attack</button>
+  </div>
+
   <script src="config/settings.js"></script>
-  <script src="scripts/assetLoader.js"></script>
+  <script src="scripts/inputHandler.js"></script>
   <script src="scripts/game.js"></script>
 </body>
 </html>
