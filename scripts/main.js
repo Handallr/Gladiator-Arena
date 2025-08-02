@@ -1,3 +1,15 @@
+
+function loadData(data){
+  platforms=[];enemies=[];goals=[];
+  if(data.platforms) data.platforms.forEach(p=>platforms.push(new Platform(p.x,p.y,p.w,p.h)));
+  if(data.enemies) data.enemies.forEach(e=>enemies.push(new Enemy(e.x,e.y)));
+  if(data.goal) goals=[new Goal(data.goal.x,data.goal.y)];
+  player.x=data.playerStart?data.playerStart[0]:64;
+  player.y=data.playerStart?data.playerStart[1]:160;
+  player.vx=player.vy=0;
+  cameraX=0;
+}
+
 // scripts/main.js
 import { loadLevel } from './loader.js';
 
@@ -187,13 +199,7 @@ document.getElementById('btn-jump').onpointerdown = ()=>keys.jump=true;
 document.getElementById('btn-jump').onpointerup   = ()=>keys.jump=false;
 
 // ===== Level list
-const levelFiles = [
-  './scripts/levels/level1.json',
-  './scripts/levels/level2.json',
-  './scripts/levels/level_custom.json',
-  './scripts/levels/level3.json',
-  './scripts/levels/level4.json'
-];
+const levelFiles = ['proc1','proc2'];
 let currentLevel = 0;
 
 // ===== Player instance
@@ -258,6 +264,12 @@ async function start(){
     requestAnimationFrame(gameLoop);
 }
 async function buildLevel(file){
+  if(file==='proc1'||file==='proc2'){
+    const data = file==='proc1'? procLevels[0]: procLevels[1];
+    loadData(data);
+    return;
+  }
+
     const data = await loadLevel(file);
     // clear arrays
     platforms=[]; enemies=[]; goals=[]; spikes=[];
