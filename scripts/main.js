@@ -12,6 +12,12 @@ function loadData(data){
 
 // scripts/main.js
 import { loadLevel } from './loader.js';
+import { generateLevel } from './levelGenerator.js';
+// Procedural levels cache
+const procLevels = [
+  generateLevel(12), // livello 1: 12 piattaforme
+  generateLevel(24)  // livello 2: 24 piattaforme
+];
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
