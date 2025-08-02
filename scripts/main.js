@@ -1,180 +1,243 @@
 
-const canvas = document.getElementById('gameCanvas');
+// scripts/main.js
+// Simple 2D platformer core with level loading via loader.js
+// Canvas & context
+const canvas = document.querySelector('canvas');
+canvas.width = 800;
+canvas.height = 400;
 const ctx = canvas.getContext('2d');
 
+// Globals
+let cameraX = 0;
+const GRAVITY = 0.5;
+const JUMP_VELOCITY = -12;
+
+// Input
 const keys = {};
 window.addEventListener('keydown', e => keys[e.key] = true);
 window.addEventListener('keyup', e => keys[e.key] = false);
 
-// map buttons to key names
-const btnMap = {
-  left: 'ArrowLeft',
-  right: 'ArrowRight',
-  jump: ' ',
-  attack: 'x'
-};
-
-for(const id in btnMap){
+// Touch buttons optional (look for elements with ids)
+['left','right','jump'].forEach(id=>{
   const btn = document.getElementById(id);
-  const keyName = btnMap[id];
-  btn.addEventListener('pointerdown', ()=> keys[keyName] = true);
-  btn.addEventListener('pointerup', ()=> keys[keyName] = false);
-}
-
-let cameraX = 0;
-
-class Entity{
-  constructor(x,y,w,h){this.x=x;this.y=y;this.w=w;this.h=h;}
-  get left(){return this.x;}
-  get right(){return this.x+this.w;}
-  get top(){return this.y;}
-  get bottom(){return this.y+this.h;}
-  intersects(o){
-    return this.right>o.left && this.left<o.right && this.bottom>o.top && this.top<o.bottom;
+  if(btn){
+    btn.onpointerdown = () => keys[id] = true;
+    btn.onpointerup = () => keys[id] = false;
+    btn.onpointerleave = () => keys[id] = false;
   }
-}
+});
 
-class Player extends Entity{
-  constructor(x,y){
-    super(x,y,32,32);
-    this.vx=0;
-    this.vy=0;
-    this.onGround=false;
-    this.speed=0.4;
-    this.jumpVel=-10;
-  }
-  update(dt, platforms){
-    if(keys['ArrowLeft']) this.vx = Math.max(this.vx - this.speed*dt, -3);
-    else if(keys['ArrowRight']) this.vx = Math.min(this.vx + this.speed*dt, 3);
-    else this.vx *= 0.8;
-
-    if(keys[' '] && this.onGround){
-      this.vy = this.jumpVel;
-      this.onGround=false;
-    }
-
-    this.vy += 0.5*dt;
-
-    this.x += this.vx;
-    for(const p of platforms){
-      if(this.intersects(p)){
-        if(this.vx>0) this.x = p.left - this.w;
-        if(this.vx<0) this.x = p.right;
-      }
-    }
-
-    this.y += this.vy;
-    this.onGround=false;
-    for(const p of platforms){
-      if(this.intersects(p)){
-        if(this.vy>0){
-          this.y = p.top - this.h;
-          this.vy = 0;
-          this.onGround=true;
-        } else if(this.vy<0){
-          this.y = p.bottom;
-          this.vy = 0;
-        }
-      }
-    }
+// Classes
+class Platform{
+  constructor(x,y,w,h){
+    this.x=x;this.y=y;this.w=w;this.h=h;
   }
   draw(){
-    ctx.fillStyle='cyan';
-    ctx.fillRect(this.x - cameraX, this.y, this.w, this.h);
+    ctx.fillStyle='#654321';
+    ctx.fillRect(this.x-cameraX,this.y,this.w,this.h);
   }
 }
 
-class Enemy extends Entity{
+class Goal{
   constructor(x,y){
-    super(x,y,32,32);
-    this.vx=-1;
+    this.x=x;this.y=y;this.w=16;this.h=32;
   }
-  update(dt, platforms){
+  draw(){
+    ctx.fillStyle='lime';
+    ctx.fillRect(this.x-cameraX,this.y,this.w,this.h);
+  }
+}
+
+class Enemy{
+  constructor(x,y,dir=-1){
+    this.x=x;this.y=y;this.w=16;this.h=16;
+    this.vx=dir*1.2;
+    this.vy=0;
+    this.alive=true;
+  }
+  update(){
+    if(!this.alive) return;
     this.x += this.vx;
+    // gravity
+    this.vy += GRAVITY;
+    this.y += this.vy;
 
-    // simple direction change when falling off platform
-    const footX = this.vx > 0 ? this.right + 1 : this.left - 1;
-    const footY = this.bottom + 1;
-
-    let support=false;
-    for(const p of platforms){
-      if(footX > p.left && footX < p.right && footY >= p.top && footY <= p.bottom + 5){
-        support=true;break;
+    // simple ground collision
+    platforms.forEach(p=>{
+      if (this.x+this.w > p.x && this.x < p.x+p.w && 
+          this.y+this.h > p.y && this.y+this.h < p.y+p.h){
+        this.y = p.y - this.h;
+        this.vy = 0;
       }
-    }
-    if(!support){
+    });
+
+    // reverse direction at platform edges
+    const underFoot = platforms.find(p=> this.x+this.w/2 > p.x && this.x+this.w/2 < p.x+p.w && Math.abs((this.y+this.h)-p.y) < 2);
+    if(!underFoot){
       this.vx *= -1;
     }
   }
   draw(){
+    if(!this.alive) return;
     ctx.fillStyle='orange';
-    ctx.fillRect(this.x - cameraX, this.y, this.w, this.h);
+    ctx.fillRect(this.x-cameraX,this.y,this.w,this.h);
   }
 }
 
-class Platform extends Entity{
-  constructor(x,y,w,h){super(x,y,w,h);}
+class Player{
+  constructor(x,y){
+    this.x=x;this.y=y;this.w=16;this.h=24;
+    this.vx=0;this.vy=0;
+  }
+  update(){
+    // horiz input
+    if(keys['ArrowLeft']||keys['left']) this.vx = -3;
+    else if(keys['ArrowRight']||keys['right']) this.vx = 3;
+    else this.vx = 0;
+
+    // jump
+    if((keys['ArrowUp']||keys['jump']||keys[' ']) && this.onGround()){
+      this.vy = JUMP_VELOCITY;
+    }
+
+    // gravity
+    this.vy += GRAVITY;
+
+    // move X
+    this.x += this.vx;
+
+    // horizontal collision with platforms
+    platforms.forEach(p=>{
+      if (this.x+this.w > p.x && this.x < p.x+p.w &&
+          this.y+this.h > p.y && this.y < p.y+p.h){
+        if(this.vx>0) this.x = p.x - this.w;
+        if(this.vx<0) this.x = p.x + p.w;
+      }
+    });
+
+    // move Y
+    this.y += this.vy;
+
+    // vertical collision
+    let grounded = false;
+    platforms.forEach(p=>{
+      if (this.x+this.w > p.x && this.x < p.x+p.w &&
+          this.y+this.h > p.y && this.y < p.y+p.h){
+        if(this.vy>0){
+          this.y = p.y - this.h;
+          this.vy = 0;
+          grounded = true;
+        } else if(this.vy<0){
+          this.y = p.y + p.h;
+          this.vy = 0;
+        }
+      }
+    });
+
+    // spikes check
+    spikes.forEach(s=>{
+      if (this.x+this.w > s.x && this.x < s.x+s.w &&
+          this.y+this.h > s.y && this.y < s.y+s.h){
+        resetLevel();
+      }
+    });
+
+    // bottom fall
+    if(this.y > canvas.height) resetLevel();
+
+    // camera
+    if(this.x - cameraX > canvas.width*0.4){
+      cameraX = this.x - canvas.width*0.4;
+    }
+  }
+
+  onGround(){
+    return platforms.some(p=> this.x+this.w > p.x && this.x < p.x+p.w && Math.abs((this.y+this.h) - p.y) < 1);
+  }
+
   draw(){
-    ctx.fillStyle='brown';
-    ctx.fillRect(this.x - cameraX, this.y, this.w, this.h);
+    ctx.fillStyle='skyblue';
+    ctx.fillRect(this.x-cameraX,this.y,this.w,this.h);
   }
 }
 
-const platforms=[
-  new Platform(0,350,1600,50),
-  new Platform(200,280,100,20),
-  new Platform(400,220,100,20),
-  new Platform(600,160,100,20),
-];
-const enemies=[
-  new Enemy(500,318),
-  new Enemy(900,318),
-];
+// Arrays
+const platforms = [];
+const enemies = [];
+const goals = [];
+const spikes = [];
 
-let player = new Player(50,318);
+// levels
+const levelFiles = ['levels/level1.json','levels/level2.json'];
+let currentLevel = 0;
 
-let last=0;
-function loop(timestamp){
-  const dt = (timestamp-last)/16;
-  last=timestamp;
-  update(dt);
+const player = new Player(0,0);
+
+async function start(){
+  await loadLevel(levelFiles[currentLevel]);
+  requestAnimationFrame(loop);
+}
+
+function nextLevel(){
+  currentLevel = (currentLevel+1) % levelFiles.length;
+  loadLevel(levelFiles[currentLevel]);
+}
+
+function resetLevel(){
+  loadLevel(levelFiles[currentLevel]);
+}
+
+function loop(){
+  update();
   draw();
   requestAnimationFrame(loop);
 }
 
-function update(dt){
-  player.update(dt, platforms);
-  enemies.forEach(e=>e.update(dt, platforms));
-
-  for(const e of enemies){
-    if(player.intersects(e)){
-      if(player.vy>0 && player.bottom - e.top < 20){
-        e.y = 10000;
-        player.vy = player.jumpVel*0.6;
+function update(){
+  player.update();
+  enemies.forEach(e=>{
+    e.update();
+    // player-enemy collision
+    if(e.alive && AABB(player,e)){
+      const stomp = player.vy>0 && (player.y + player.h - e.y) < 10;
+      if(stomp){
+        e.alive=false;
+        player.vy = JUMP_VELOCITY*0.6;
       }else{
         resetLevel();
-        return;
       }
     }
-  }
+  });
 
-  if(player.x - cameraX > canvas.width*0.4){
-    cameraX = player.x - canvas.width*0.4;
-  }
+  // goal
+  goals.forEach(g=>{
+    if(AABB(player,g)){
+      nextLevel();
+    }
+  });
 }
 
 function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.fillStyle='#87CEEB';
+  // background
+  ctx.fillStyle='#a0d8ff';
   ctx.fillRect(0,0,canvas.width,canvas.height);
+
   platforms.forEach(p=>p.draw());
-  enemies.forEach(e=>e.draw());
+  spikes.forEach(s=>{
+    ctx.fillStyle='red';
+    ctx.fillRect(s.x-cameraX,s.y,s.w,s.h);
+  });
   player.draw();
+  enemies.forEach(e=>e.draw());
+  goals.forEach(g=>g.draw());
 }
 
-function resetLevel(){
-  cameraX=0;
-  player = new Player(50,318);
+function AABB(a,b){
+  return a.x < b.x + b.w &&
+         a.x + a.w > b.x &&
+         a.y < b.y + b.h &&
+         a.y + a.h > b.y;
 }
 
-requestAnimationFrame(loop);
+start();
