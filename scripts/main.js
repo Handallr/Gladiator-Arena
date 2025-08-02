@@ -19,6 +19,21 @@ let spikes    = [];
 // ===== Camera
 let cameraX = 0;
 
+// camera thresholds
+const CAMERA_LEFT  = canvas.width * 0.33;   // move forward threshold
+const CAMERA_RIGHT = canvas.width * 0.33;   // backtrack threshold
+
+function updateCamera(){
+  if(player.x - cameraX > CAMERA_LEFT){
+    cameraX = player.x - CAMERA_LEFT;
+  }
+  if(player.x - cameraX < CAMERA_RIGHT){
+    cameraX = player.x - CAMERA_RIGHT;
+  }
+}
+
+
+
 // ===== Classes
 class RectEntity{
     constructor(x,y,w,h){ this.x=x; this.y=y; this.w=w; this.h=h; }
@@ -180,8 +195,9 @@ const player = new Player(32,160);
 
 // ===== Game loop
 function update(){
-    player.update(keys);
-    enemies.forEach(e=>e.update());
+      updateCamera();
+player.update(keys);
+    enemies.filter(obj => obj.x + obj.w > cameraX && obj.x < cameraX + canvas.width).forEach(e=>e.update());
 
     // player-enemy collision
     enemies.forEach(e=>{
@@ -218,9 +234,9 @@ function update(){
 }
 function draw(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
-    platforms.forEach(p=>p.draw());
-    spikes.forEach(s=>s.draw());
-    goals.forEach(g=>g.draw());
+    platforms.filter(obj => obj.x + obj.w > cameraX && obj.x < cameraX + canvas.width).forEach(p=>p.draw());
+    spikes.filter(obj => obj.x + obj.w > cameraX && obj.x < cameraX + canvas.width).forEach(s=>s.draw());
+    goals.filter(obj => obj.x + obj.w > cameraX && obj.x < cameraX + canvas.width).forEach(g=>g.draw());
     enemies.forEach(e=>e.alive && e.draw());
     player.draw();
 }
