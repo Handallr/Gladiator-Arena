@@ -10,14 +10,16 @@ function loadData(data){
   cameraX=0;
 }
 
+function showMessage(text, state, duration=MESSAGE_DURATION){
+  message = text;
+  messageTime = performance.now();
+  gameState = state;
+  currentMessageDuration = duration;
+}
+
+
 // scripts/main.js
 import { loadLevel } from './loader.js';
-import { generateLevel } from './levelGenerator.js';
-// Procedural levels cache
-const procLevels = [
-  generateLevel(12), // livello 1: 12 piattaforme
-  generateLevel(24)  // livello 2: 24 piattaforme
-];
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
@@ -27,6 +29,12 @@ const GRAVITY = 0.5;
 const MOVE_ACC = 0.6;
 const MAX_VX = 4;
 const JUMP_VEL = -12;
+// ===== Game State & Messages
+let gameState = 'splash';   // 'splash' | 'play' | 'dead' | 'levelComplete' | 'victory'
+let message = 'Livello 1';
+let messageTime = performance.now();
+const MESSAGE_DURATION = 1500; // ms
+
 
 // ===== Global arrays
 let platforms = [];
@@ -45,7 +53,15 @@ function updateCamera(){
   if(player.x - cameraX > CAMERA_LEFT){
     cameraX = player.x - CAMERA_LEFT;
   }
-  if(player.x - cameraX < CAMERA_RIGHT){
+  
+function showMessage(text, state, duration=MESSAGE_DURATION){
+  message = text;
+  messageTime = performance.now();
+  gameState = state;
+  currentMessageDuration = duration;
+}
+
+if(player.x - cameraX < CAMERA_RIGHT){
     cameraX = player.x - CAMERA_RIGHT;
   }
 }
@@ -105,7 +121,7 @@ class Player extends RectEntity{
         }
 
         // death by falling
-        if(this.y > canvas.height) resetLevel();
+        if(this.y > canvas.height) showMessage('Morto','dead');
     }
     draw(){
         super.draw('#00f');
@@ -212,7 +228,35 @@ let currentLevel = 0;
 const player = new Player(32,160);
 
 // ===== Game loop
+
 function update(){
+  // state machine
+  const now = performance.now();
+  if(gameState === 'splash'){
+    if(now - messageTime > MESSAGE_DURATION){
+      gameState = 'play';
+    } else {
+      return;
+    }
+  } else if(gameState === 'dead'){
+    if(now - messageTime > MESSAGE_DURATION){
+      restartGame();
+    } else {
+      return;
+    }
+  } else if(gameState === 'levelComplete'){
+    if(now - messageTime > MESSAGE_DURATION){
+      nextLevel();
+    } else {
+      return;
+    }
+  } else if(gameState === 'victory'){
+    return; // stop all
+  }
+
+  // normal update when playing
+  updateCamera();
+
       updateCamera();
 player.update(keys);
     enemies.filter(obj => obj.x + obj.w > cameraX && obj.x < cameraX + canvas.width).forEach(e=>e.update());
@@ -226,7 +270,7 @@ player.update(keys);
                 e.alive=false;
                 player.vy = JUMP_VEL*0.6;
             }else{
-                resetLevel();
+                showMessage('Morto','dead');
             }
         }
     });
@@ -282,7 +326,17 @@ async function buildLevel(file){
     // build
     if(data.platforms) data.platforms.forEach(p=>platforms.push(new Platform(p.x,p.y,p.w,p.h)));
     if(data.enemies)   data.enemies.forEach(e=>enemies.push(new Enemy(e.x,e.y)));
-    if(data.goals)     data.goals.forEach(g=>goals.push(new Goal(g.x,g.y)));
+    if(data.goals)     data.
+    goals.forEach(g=>{
+      if(AABB(player,g)){
+        if(currentLevel===0){
+          showMessage('Livello 2','levelComplete');
+        } else {
+          showMessage('VITTORIA','victory', 999999); // stay
+        }
+      }
+    });
+
     if(data.spikes)    data.spikes.forEach(s=>spikes.push(new Spike(s.x,s.y,s.w,s.h)));
     if(data.playerStart){
         player.x = data.playerStart[0];
@@ -291,9 +345,7 @@ async function buildLevel(file){
     }
     cameraX=0;
 }
-function resetLevel(){
-    buildLevel(levelFiles[currentLevel]);
-}
+function resetLevel(){ showMessage('Morto','dead'); }
 function nextLevel(){
     currentLevel = (currentLevel+1)%levelFiles.length;
     buildLevel(levelFiles[currentLevel]);
@@ -301,3 +353,13 @@ function nextLevel(){
 
 // ===== Start!
 start();
+
+
+function restartGame(){
+  // regenerate new levels
+  procLevels[0] = generateLevel(12);
+  procLevels[1] = generateLevel(24);
+  currentLevel = 0;
+  loadData(procLevels[0]);
+  showMessage('Livello 1','splash');
+}
