@@ -2,18 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Gladiator Arena - Gravity Demo</title>
+  <title>Prototype Platformer</title>
   <link rel="stylesheet" href="styles/style.css" />
+  <style>
+    body{background:#000;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;}
+    #game-container{position:relative;}
+    canvas{border:2px solid #fff;background:#333;}
+    #controls{display:flex;justify-content:center;gap:12px;margin-top:8px;}
+    #controls button{font-size:24px;padding:8px 12px;}
+  </style>
 </head>
 <body>
   <div id="game-container">
-    <canvas id="gameCanvas" width="800" height="450"></canvas>
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
     <div id="controls">
       <button id="left">◀️</button>
       <button id="right">▶️</button>
-      <button id="attack">Attack</button>
+      <button id="jump">🔼</button>
+      <button id="attack">⚔️</button>
     </div>
   </div>
-  <script src="scripts/main.js"></script>
+  <script type="module" src="scripts/main.js"></script>
 </body>
 </html>
