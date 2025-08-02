@@ -80,39 +80,66 @@ class Player extends RectEntity{
 }
 class Platform extends RectEntity{
     constructor(x,y,w,h){ super(x,y,w,h); }
-    draw(){ super.draw('#888'); }
+    draw(){ super.draw('#8b692f'); }
 }
 class Enemy extends RectEntity{
     constructor(x,y){
         super(x,y,18,18);
         this.vx = -1.2;
-        this.alive=true;
+        this.vy = 0;
+        this.alive = true;
     }
     update(){
         if(!this.alive) return;
-        this.x += this.vx;
-        // change dir on platform edges
-        let onPlatform=false;
+
+        // gravity
+        this.vy = Math.min(this.vy + GRAVITY, 8);
+        this.y += this.vy;
+
+        // death if fall off screen
+        if(this.y > canvas.height){ this.alive = false; return; }
+
+        // landing on platforms (tolerance 4px)
+        let onGround = false;
         for(const p of platforms){
-            if(this.y+this.h === p.y && this.x+this.w > p.x && this.x < p.x+p.w){
-                onPlatform=true;
-                if(this.x <= p.x || this.x+this.w >= p.x+p.w){
-                    this.vx*=-1;
-                }
+            if (this.y + this.h > p.y && this.y + this.h < p.y + 4 &&
+                this.x + this.w > p.x && this.x < p.x + p.w) {
+                this.y = p.y - this.h;
+                this.vy = 0;
+                onGround = true;
             }
         }
-        if(!onPlatform){
-            this.vx*=-1;
+
+        if(onGround){
+            this.x += this.vx;
+
+            // edge detection
+            const aheadX = this.vx > 0 ? this.x + this.w : this.x - 1;
+            const hasFloorAhead = platforms.some(p =>
+                aheadX > p.x && aheadX < p.x + p.w &&
+                this.y + this.h === p.y
+            );
+            if(!hasFloorAhead){
+                this.vx *= -1;
+            }
         }
     }
     draw(){ super.draw('#f60'); }
 }
+
 class Goal extends RectEntity{
     constructor(x,y){
         super(x,y,16,32);
     }
-    draw(){ super.draw('#0f0'); }
+    draw(){
+        // pole
+        ctx.fillStyle = '#999';
+        ctx.fillRect(this.x - cameraX + 6, this.y - 40, 4, 40);
+        // flag
+        super.draw('#0f0');
+    }
 }
+
 class Spike extends RectEntity{
     constructor(x,y,w,h){ super(x,y,w,h); }
     draw(){ super.draw('#f0f'); }
@@ -176,6 +203,12 @@ function update(){
             nextLevel();
             return;
         }
+    // auto-finish if all enemies defeated
+    if (enemies.every(e => !e.alive)) {
+        nextLevel();
+        return;
+    }
+
     }
 
     // camera follow
