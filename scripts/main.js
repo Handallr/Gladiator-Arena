@@ -187,7 +187,13 @@ document.getElementById('btn-jump').onpointerdown = ()=>keys.jump=true;
 document.getElementById('btn-jump').onpointerup   = ()=>keys.jump=false;
 
 // ===== Level list
-const levelFiles = ['./levels/level1.json','./levels/level2.json','./levels/level_custom.json'];
+const levelFiles = [
+  './scripts/levels/level1.json',
+  './scripts/levels/level2.json',
+  './scripts/levels/level_custom.json',
+  './scripts/levels/level3.json',
+  './scripts/levels/level4.json'
+];
 let currentLevel = 0;
 
 // ===== Player instance
