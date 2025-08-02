@@ -1,0 +1,1 @@
+{"playerStart": [32, 160], "platforms": [{"x": 0, "y": 184, "w": 4000, "h": 16}], "enemies": [{"x": 200, "y": 168}], "goals": [{"x": 560, "y": 152}], "goal": {"x": 3800, "y": 152}, "worldWidth": 4000}
